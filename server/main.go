@@ -5,6 +5,8 @@ import (
 
 	"github.com/digicon-trap1-2023/backend/handler"
 	"github.com/digicon-trap1-2023/backend/infrastructure"
+	"github.com/digicon-trap1-2023/backend/interfaces/repository"
+	"github.com/digicon-trap1-2023/backend/usecases/service"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,7 +19,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api := handler.NewAPI(handler.NewPingHandler(db), handler.NewAuthHandler(), handler.NewBookMarkHandler(), handler.NewDocumentHandler())
+	documentRepository := repository.NewDocumentRepository(db)
+
+	documentService := service.NewDocumentService(documentRepository)
+
+	api := handler.NewAPI(handler.NewPingHandler(), handler.NewAuthHandler(), handler.NewBookMarkHandler(), handler.NewDocumentHandler(documentService))
 
 	handler.SetUpRouter(e, api)
 }

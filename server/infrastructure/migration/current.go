@@ -14,5 +14,9 @@ func Migrations() []*gormigrate.Migration {
 func AllTables() []interface{} {
 	return []interface{}{
 		&model.User{},
+		&model.BookMark{},
+		&model.Document{},
+		&model.TagDocument{},
+		&model.Tag{},
 	}
 }
