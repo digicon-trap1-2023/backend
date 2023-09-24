@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  up:
+    desc: Start docker container.
+    cmds:
+      - docker compose up -d
+  down:
+    desc: Stop docker container.
+    cmds:
+      - docker compose down
+  rmc:
+    desc: Remove docker container.
+    cmd: docker container rm digicon_trap1_mysql && docker container rm digicon_trap1_backend
+  db:
+    desc: Login database from local. Enter `password` for Password
+    cmd: mysql 127.0.0.1 -P 3306 -u root -p
