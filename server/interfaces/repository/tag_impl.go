@@ -2,7 +2,6 @@ package repository
 
 import (
 	"github.com/digicon-trap1-2023/backend/domain"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -24,12 +23,7 @@ func (r *TagRepository) GetTags() ([]*domain.Tag, error) {
 	return result, nil
 }
 
-func (r *TagRepository) CreateTag(id uuid.UUID, name string) error {
-	tag := &domain.Tag{
-		Id:   id,
-		Name: name,
-	}
-
+func (r *TagRepository) CreateTag(tag *domain.Tag) error {
 	if err := r.conn.Create(tag).Error; err != nil {
 		return err
 	}
