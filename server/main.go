@@ -18,5 +18,6 @@ func main() {
 	}
 
 	api := handler.NewAPI(handler.NewPingHandler(db), handler.NewAuthHandler(), handler.NewBookMarkHandler(), handler.NewDocumentHandler())
+
 	handler.SetUpRouter(e, api)
 }

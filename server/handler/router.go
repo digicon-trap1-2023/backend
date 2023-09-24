@@ -21,5 +21,17 @@ func NewAPI(ping *PingHandler, auth *AuthHandler, bookmark *BookMarkHandler, doc
 func SetUpRouter(e *echo.Echo, api API) {
 	e.GET("/ping", api.Ping.Ping)
 
+	authGroup := e.Group("/auth")
+	{
+		authGroup.POST("/signup", nil)
+	}
+
+	e.Use(api.Auth.AuthMiddleware)
+
+	bookmarkGroup := e.Group("/bookmark")
+	{
+		bookmarkGroup.GET("", nil)
+	}
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
