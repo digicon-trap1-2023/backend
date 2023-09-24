@@ -1,19 +1,14 @@
 package main
 
 import (
-    "net/http"
+	"github.com/digicon-trap1-2023/backend/handler"
 
     "github.com/labstack/echo/v4"
 )
 
 func main() {
     e := echo.New()
-
-    e.GET("/", hello)
-
-    e.Logger.Fatal(e.Start(":8080"))
-}
-
-func hello(c echo.Context) error {
-    return c.String(http.StatusOK, "Hello, World!")
+	
+	api := handler.NewAPI(handler.NewPingHandler(), handler.NewAuthHandler(), handler.NewBookMarkHandler(), handler.NewDocumentHandler())
+	handler.SetUpRouter(e, api)
 }
