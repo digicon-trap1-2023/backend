@@ -33,5 +33,13 @@ func SetUpRouter(e *echo.Echo, api API) {
 		bookmarkGroup.GET("", nil)
 	}
 
+	documentsGroup := e.Group("/documents")
+	{
+		documentsGroup.GET("", api.Document.GetDocuments)
+		documentsGroup.POST("", nil)
+		documentsGroup.GET("/:id", nil)
+		documentsGroup.PATCH("/:id", nil)
+	}
+
 	e.Logger.Fatal(e.Start(":8080"))
 }
