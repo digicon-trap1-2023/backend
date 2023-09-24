@@ -20,4 +20,6 @@ func NewAPI(ping *PingHandler, auth *AuthHandler, bookmark *BookMarkHandler, doc
 
 func SetUpRouter(e *echo.Echo, api API) {
 	e.GET("/ping", api.Ping.Ping)
+
+	e.Logger.Fatal(e.Start(":8080"))
 }
