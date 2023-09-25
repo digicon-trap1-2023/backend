@@ -44,9 +44,9 @@ func SetUpRouter(e *echo.Echo, api API) {
 	documentsGroup := e.Group("/documents")
 	{
 		documentsGroup.GET("", api.Document.GetDocuments)
-		documentsGroup.POST("", nil)
-		documentsGroup.GET("/:id", nil)
-		documentsGroup.PATCH("/:id", nil)
+		documentsGroup.POST("", api.Document.PostDocument)
+		documentsGroup.GET("/:id", api.Document.GetDocument)
+		documentsGroup.PATCH("/:id", api.Document.PatchDocument)
 	}
 
 	tagGroup := e.Group("/tags")

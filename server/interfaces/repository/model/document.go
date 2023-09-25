@@ -16,7 +16,7 @@ func (Document) TableName() string {
 	return "documents"
 }
 
-func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Reference) (*domain.Document, error) {
+func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Reference, tags []*Tag) (*domain.Document, error) {
 	id, err := uuid.Parse(d.Id)
 	if err != nil {
 		panic(err)
@@ -36,11 +36,21 @@ func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Referen
 		}
 	}
 
+	tagsDomain := make([]*domain.Tag, len(tags))
+	for i, tag := range tags {
+		tagsDomain[i], err = tag.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &domain.Document{
-		Id:         id,
-		Title:      d.Title,
-		File:       d.File,
-		BookMarked: bookmarked,
-		Referenced: referenced,
+		Id:          id,
+		Title:       d.Title,
+		File:        d.File,
+		Description: d.Description,
+		Tags:        tagsDomain,
+		BookMarked:  bookmarked,
+		Referenced:  referenced,
 	}, nil
 }

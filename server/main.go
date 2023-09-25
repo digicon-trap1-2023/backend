@@ -19,7 +19,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	documentRepository := repository.NewDocumentRepository(db)
+	client, err := infrastructure.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	documentRepository := repository.NewDocumentRepository(db, client)
 	tagRepository := repository.NewTagRepository(db)
 
 	documentService := service.NewDocumentService(documentRepository)
