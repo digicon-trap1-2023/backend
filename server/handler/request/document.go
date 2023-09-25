@@ -76,10 +76,10 @@ type PostDocumentRequest struct {
 	Description string   `json:"description"`
 }
 
-func (r *PostDocumentRequest) GetTagIds() ([]uuid.UUID, error) {
-	tagIds := make([]uuid.UUID, len(r.TagIds))
+func GetTagIds(tagIdStrings []string) ([]uuid.UUID, error) {
+	tagIds := make([]uuid.UUID, len(tagIdStrings))
 
-	for i, tagId := range r.TagIds {
+	for i, tagId := range tagIdStrings {
 		id, err := uuid.Parse(tagId)
 		if err != nil {
 			return nil, err
@@ -92,7 +92,7 @@ func (r *PostDocumentRequest) GetTagIds() ([]uuid.UUID, error) {
 }
 
 type PatchDocumentRequest struct {
-	Id          string   `json:"id"`
+	Id          string   `json:"id" param:"id"`
 	Title       string   `json:"title"`
 	TagIds      []string `json:"tags"`
 	Description string   `json:"description"`

@@ -115,7 +115,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 	defer fileData.Close()
 	fileId := util.NewID().String()
 
-	if err := r.s3.PutObject(fileId, fileData); err != nil {
+	if err := r.s3.PutObjectMock(fileId, fileData); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		return nil, err
 	}
 
-	if err := r.conn.Create(&tagDocuments).Error; err != nil {
+	if err := r.conn.Where("id IN ?", tagIds).Find(&tagModels).Error; err != nil {
 		return nil, err
 	}
 
@@ -198,6 +198,10 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 		Description: document.Description,
 		File:        document.File,
 	}).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Where("id IN ?", tagIds).Find(&tagModels).Error; err != nil {
 		return nil, err
 	}
 

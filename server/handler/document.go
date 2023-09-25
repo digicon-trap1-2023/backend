@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/digicon-trap1-2023/backend/handler/request"
@@ -61,9 +62,14 @@ func (h *DocumentHandler) GetDocument(c echo.Context) error {
 }
 
 func (h *DocumentHandler) PostDocument(c echo.Context) error {
-	var req request.PostDocumentRequest
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	title := c.FormValue("title")
+	description := c.FormValue("description")
+	tagsRaw := c.FormValue("tags")
+
+	var tagIdStrings []string
+	err := json.Unmarshal([]byte(tagsRaw), &tagIdStrings)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse tags")
 	}
 
 	userId, err := request.GetUserId(c)
@@ -76,12 +82,12 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	tagIds, err := req.GetTagIds()
+	tagIds, err := request.GetTagIds(tagIdStrings)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	document, err := h.s.CreateDocument(userId, req.Title, req.Description, tagIds, file)
+	document, err := h.s.CreateDocument(userId, title, description, tagIds, file)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -90,11 +96,17 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 }
 
 func (h *DocumentHandler) PatchDocument(c echo.Context) error {
-	var req request.PatchDocumentRequest
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	id := c.Param("id")
+	title := c.FormValue("title")
+	description := c.FormValue("description")
+	tagsRaw := c.FormValue("tags")
+
+	var tagIdStrings []string
+	err := json.Unmarshal([]byte(tagsRaw), &tagIdStrings)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse tags")
 	}
-	documentId, err := uuid.Parse(req.Id)
+	documentId, err := uuid.Parse(id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -109,12 +121,12 @@ func (h *DocumentHandler) PatchDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	tagIds, err := req.GetTagIds()
+	tagIds, err := request.GetTagIds(tagIdStrings)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	document, err := h.s.UpdateDocument(userId, documentId, req.Title, req.Description, tagIds, file)
+	document, err := h.s.UpdateDocument(userId, documentId, title, description, tagIds, file)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
