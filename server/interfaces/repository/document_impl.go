@@ -74,9 +74,9 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 }
 
 func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
-	var bookmarks []model.BookMark
+	var bookmarks []*model.BookMark
 	var bookmarkedDocIds []string
-	var tagDocuments []model.TagDocument
+	var tagDocuments []*model.TagDocument
 	var documents []*model.Document
 	var references []*model.Reference
 
@@ -111,7 +111,7 @@ func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []str
 
 	var result []*domain.Document
 	for _, document := range documents {
-		res, err := document.ToDomain(nil, references, nil)
+		res, err := document.ToDomain(bookmarks, references, nil)
 		if err != nil {
 			return nil, err
 		}
