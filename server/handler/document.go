@@ -34,5 +34,31 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, documents)
+	return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
 }
+
+func (h *DocumentHandler) GetDocument(c echo.Context) error {
+	var req request.GetDocumentRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	documentId, err := uuid.Parse(req.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userIdString := c.Get("userId").(string)
+	userId, err := uuid.Parse(userIdString)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	document, err := h.s.GetDocument(userId, documentId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, request.DocumentToGetDocumentResponse(document))
+}
+
