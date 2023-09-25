@@ -7,6 +7,7 @@ import (
 
 type Document struct {
 	Id          string `gorm:"type:char(36);not null;primaryKey"`
+	UserId      string `gorm:"type:char(36);not null"`
 	Title       string `gorm:"type:varchar(40)"`
 	Description string `gorm:"type:varchar(200)"`
 	File        string `gorm:"type:varchar(200)"`
@@ -19,7 +20,12 @@ func (Document) TableName() string {
 func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Reference, tags []*Tag) (*domain.Document, error) {
 	id, err := uuid.Parse(d.Id)
 	if err != nil {
-		panic(err)
+		return nil, err
+	}
+
+	userId, err := uuid.Parse(d.UserId)
+	if err != nil {
+		return nil, err
 	}
 
 	bookmarked := false
@@ -46,6 +52,7 @@ func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Referen
 
 	return &domain.Document{
 		Id:          id,
+		UserId:      userId,
 		Title:       d.Title,
 		File:        d.File,
 		Description: d.Description,
