@@ -23,10 +23,9 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userIdString := c.Get("userId").(string)
-	userId, err := uuid.Parse(userIdString)
+	userId, err := request.GetUserId(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	documents, err := h.s.GetDocuments(userId, req.ParseTags())
@@ -48,10 +47,9 @@ func (h *DocumentHandler) GetDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userIdString := c.Get("userId").(string)
-	userId, err := uuid.Parse(userIdString)
+	userId, err := request.GetUserId(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	document, err := h.s.GetDocument(userId, documentId)
@@ -68,10 +66,9 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userIdString := c.Get("userId").(string)
-	userId, err := uuid.Parse(userIdString)
+	userId, err := request.GetUserId(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	file, err := c.FormFile("file")
@@ -97,10 +94,9 @@ func (h *DocumentHandler) PatchDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	userIdString := c.Get("userId").(string)
-	userId, err := uuid.Parse(userIdString)
+	userId, err := request.GetUserId(c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	file, err := c.FormFile("file")
