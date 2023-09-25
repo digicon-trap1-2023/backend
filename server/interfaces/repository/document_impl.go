@@ -73,6 +73,70 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 	return result, nil
 }
 
+func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	var bookmarks []*model.BookMark
+	var bookmarkedDocIds []string
+	var tagDocuments []*model.TagDocument
+	var documents []*model.Document
+	var references []*model.Reference
+
+	if err := r.conn.Where("user_id = ?", userId).Find(&bookmarks).Error; err != nil {
+		return nil, err
+	}
+
+	for _, bookmark := range bookmarks {
+		bookmarkedDocIds = append(bookmarkedDocIds, bookmark.DocumentId)
+	}
+
+	if len(tags) > 0 {
+		if err := r.conn.Where("tag_id IN ?", tags).Find(&tagDocuments).Error; err != nil {
+			return nil, err
+		}
+
+		taggedDocIds := make([]string, len(tagDocuments))
+		for i, tagDocument := range tagDocuments {
+			taggedDocIds[i] = tagDocument.DocumentId
+		}
+
+		bookmarkedDocIds = intersection(bookmarkedDocIds, taggedDocIds)
+	}
+
+	if err := r.conn.Where("id IN ?", bookmarkedDocIds).Find(&documents).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Where("document_id IN ?", bookmarkedDocIds).Find(&references).Error; err != nil {
+		return nil, err
+	}
+
+	var result []*domain.Document
+	for _, document := range documents {
+		res, err := document.ToDomain(bookmarks, references, nil)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, res)
+	}
+
+	return result, nil
+}
+
+// intersection function is used to intersect two string slices (in this case, DocIds)
+func intersection(a, b []string) (c []string) {
+	m := make(map[string]bool)
+
+	for _, item := range a {
+		m[item] = true
+	}
+
+	for _, item := range b {
+		if _, ok := m[item]; ok {
+			c = append(c, item)
+		}
+	}
+	return
+}
+
 func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {
 	var document model.Document
 	var bookmarks []*model.BookMark

@@ -9,6 +9,7 @@ import (
 
 type GetDocumentsRequest struct {
 	Tags string `json:"tags" query:"tags"`
+	Type string `json:"type" query:"type"`
 }
 
 type GetDocumentsResponse struct {

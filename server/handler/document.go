@@ -29,6 +29,15 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return err
 	}
 
+	if req.Type == "bookmark" {
+		documents, err := h.s.GetBookmarkedDocuments(userId, req.ParseTags())
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+
+		return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
+	}
+
 	documents, err := h.s.GetDocuments(userId, req.ParseTags())
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
