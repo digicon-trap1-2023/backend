@@ -47,6 +47,11 @@ func SetUpRouter(e *echo.Echo, api API) {
 		documentsGroup.POST("", api.Document.PostDocument)
 		documentsGroup.GET("/:id", api.Document.GetDocument)
 		documentsGroup.PATCH("/:id", api.Document.PatchDocument)
+		documentsGroup.DELETE("/:id", api.Document.DeleteDocument)
+		documentsGroup.POST("/:id/bookmarks", api.Document.PostBookmark)
+		documentsGroup.DELETE("/:id/bookmarks", api.Document.DeleteBookmark)
+		documentsGroup.POST("/:id/reference", api.Document.PostReference)
+		documentsGroup.DELETE("/:id/reference", api.Document.DeleteReference)
 	}
 
 	tagGroup := e.Group("/tags")

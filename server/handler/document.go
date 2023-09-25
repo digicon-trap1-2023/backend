@@ -133,3 +133,23 @@ func (h *DocumentHandler) PatchDocument(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, document)
 }
+
+func (h *DocumentHandler) DeleteDocument(c echo.Context) error {
+	return nil
+}
+
+func (h *DocumentHandler) PostBookmark(c echo.Context) error {
+	return nil
+}
+
+func (h *DocumentHandler) DeleteBookmark(c echo.Context) error {
+	return nil
+}
+
+func (h *DocumentHandler) PostReference(c echo.Context) error {
+	return nil
+}
+
+func (h *DocumentHandler) DeleteReference(c echo.Context) error {
+	return nil
+}
