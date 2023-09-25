@@ -31,8 +31,14 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 	var bookmarks []*model.BookMark
 	var references []*model.Reference
 
-	if err := r.conn.Where("tag_id IN ?", tags).Find(&tagDocuments).Error; err != nil {
-		return nil, err
+	if len(tags) == 0 {
+		if err := r.conn.Find(&documents).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.conn.Where("tag_id IN ?", tags).Find(&tagDocuments).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	for _, tagDocument := range tagDocuments {
