@@ -210,3 +210,65 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 
 	return document.ToDomain(nil, nil, tagModels)
 }
+
+func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("id = ?", documentId).Delete(&model.Document{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.TagDocument{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	bookmark := &model.BookMark{
+		UserId:     userId.String(),
+		DocumentId: documentId.String(),
+	}
+
+	if err := r.conn.Create(bookmark).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) UnBookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("user_id = ?", userId).Where("document_id = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) Reference(userId uuid.UUID, documentId uuid.UUID) error {
+	reference := &model.Reference{
+		UserId:     userId.String(),
+		DocumentId: documentId.String(),
+	}
+
+	if err := r.conn.Create(reference).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) UnReference(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("user_id = ?", userId).Where("document_id = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

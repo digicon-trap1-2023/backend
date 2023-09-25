@@ -38,3 +38,23 @@ func (s *DocumentService) CreateDocument(userId uuid.UUID, title string, descrip
 func (s *DocumentService) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
 	return s.documentRepository.UpdateDocument(userId, documentId, title, description, tagIds, file)
 }
+
+func (s *DocumentService) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.DeleteDocument(userId, documentId)
+}
+
+func (s *DocumentService) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.BookMark(userId, documentId)
+}
+
+func (s *DocumentService) UnBookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.UnBookMark(userId, documentId)
+}
+
+func (s *DocumentService) Reference(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.Reference(userId, documentId)
+}
+
+func (s *DocumentService) UnReference(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.UnReference(userId, documentId)
+}

@@ -8,6 +8,6 @@ type Document struct {
 	File        string    `json:"file"`
 	Description string    `json:"description"`
 	Tags        []*Tag    `json:"tags"`
-	BookMarked  bool      `json:"bookMarked"`
+	BookMarked  bool      `json:"bookmarked"`
 	Referenced  bool      `json:"referenced"`
 }

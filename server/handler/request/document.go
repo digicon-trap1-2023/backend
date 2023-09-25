@@ -15,7 +15,7 @@ type GetDocumentsResponse struct {
 	Id         string `json:"id"`
 	Title      string `json:"title"`
 	File       string `json:"file"`
-	BookMarked bool   `json:"bookMarked"`
+	BookMarked bool   `json:"bookmarked"`
 	Referenced bool   `json:"referenced"`
 }
 
@@ -57,7 +57,7 @@ type GetDocumentResponse struct {
 	File        string `json:"file"`
 	Tags        []Tag  `json:"tags"`
 	Description string `json:"description"`
-	BookMarked  bool   `json:"bookMarked"`
+	BookMarked  bool   `json:"bookmarked"`
 	Referenced  bool   `json:"referenced"`
 }
 
