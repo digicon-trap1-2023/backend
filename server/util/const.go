@@ -6,6 +6,7 @@ type Key int
 
 const (
 	UserKey Key = iota
+	RoleKey
 )
 
 func SampleUserID() uuid.UUID {
@@ -14,4 +15,8 @@ func SampleUserID() uuid.UUID {
 
 func NewID() uuid.UUID {
 	return uuid.New()
+}
+
+func SampleRole() string {
+	return "writer"
 }
