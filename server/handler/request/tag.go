@@ -19,3 +19,13 @@ type GetTagsResponse []Tag
 type PostTagRequest struct {
 	Name string `json:"name"`
 }
+
+func ConvertTags(tags []*domain.Tag) []Tag {
+	getTagsResponse := make([]Tag, len(tags))
+
+	for i, tag := range tags {
+		getTagsResponse[i] = ConvertTag(tag)
+	}
+
+	return getTagsResponse
+}

@@ -44,7 +44,7 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 
 	var result []*domain.Document
 	for _, document := range documents {
-		res, err := document.ToDomain(bookmarks, references)
+		res, err := document.ToDomain(bookmarks, references, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -53,4 +53,39 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 	}
 
 	return result, nil
+}
+
+func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {
+	var document model.Document
+	var bookmarks []*model.BookMark
+	var references []*model.Reference
+	var tagDocuments []*model.TagDocument
+	var tags []*model.Tag
+
+	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Where("user_id = ?", userId).Find(&bookmarks).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Find(&references).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Where("document_id = ?", documentId).Find(&tagDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	tagIds := make([]string, len(tags))
+	for i, tag := range tagDocuments {
+		tagIds[i] = tag.TagId
+	}
+
+	if err := r.conn.Where("id IN ?", tagIds).Find(&tags).Error; err != nil {
+		return nil, err
+	}
+
+	return document.ToDomain(bookmarks, references, tags)
 }
