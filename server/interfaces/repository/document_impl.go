@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"mime/multipart"
 
 	"github.com/digicon-trap1-2023/backend/domain"
@@ -100,7 +99,7 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	return document.ToDomain(bookmarks, references, tags)
 }
 
-func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
+func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
 	var tagModels []*model.Tag
 	fileData, err := file.Open()
 	if err != nil {
@@ -120,24 +119,10 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		File:        fileId,
 		Description: description,
 	}
-	if err := r.conn.Where("name IN ?", tags).Find(&tagModels).Error; err != nil {
-		return nil, err
-	}
-
-	tagNameToID := make(map[string]string)
-	for _, tagModel := range tagModels {
-		tagNameToID[tagModel.Name] = tagModel.Id
-	}
-
-	tagDocuments := make([]*model.TagDocument, 0, len(tags))
-	for _, tagName := range tags {
-		tagID, exists := tagNameToID[tagName]
-		if !exists {
-			return nil, fmt.Errorf("Tag ID not found for tag name: %s", tagName)
-		}
-
+	var tagDocuments []*model.TagDocument
+	for _, tagID := range tagIds {
 		tagDocument := &model.TagDocument{
-			TagId:      tagID,
+			TagId:      tagID.String(),
 			DocumentId: document.Id,
 		}
 		tagDocuments = append(tagDocuments, tagDocument)
@@ -158,10 +143,9 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 	return document.ToDomain(nil, nil, tagModels)
 }
 
-func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
+func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
 	var tagModels []*model.Tag
 	var document model.Document
-	var tagDocuments []*model.TagDocument
 	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
 		return nil, err
 	}
@@ -188,24 +172,10 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 		document.Description = description
 	}
 
-	if err := r.conn.Where("name IN ?", tags).Find(&tagModels).Error; err != nil {
-		return nil, err
-	}
-
-	tagNameToID := make(map[string]string)
-	for _, tagModel := range tagModels {
-		tagNameToID[tagModel.Name] = tagModel.Id
-	}
-
-	tagDocuments = make([]*model.TagDocument, 0, len(tags))
-	for _, tagName := range tags {
-		tagID, exists := tagNameToID[tagName]
-		if !exists {
-			return nil, fmt.Errorf("Tag ID not found for tag name: %s", tagName)
-		}
-
+	var tagDocuments []*model.TagDocument
+	for _, tagID := range tagIds {
 		tagDocument := &model.TagDocument{
-			TagId:      tagID,
+			TagId:      tagID.String(),
 			DocumentId: document.Id,
 		}
 		tagDocuments = append(tagDocuments, tagDocument)

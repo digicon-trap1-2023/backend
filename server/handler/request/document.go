@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/digicon-trap1-2023/backend/domain"
+	"github.com/google/uuid"
 )
 
 type GetDocumentsRequest struct {
@@ -70,14 +71,44 @@ func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentRespons
 }
 
 type PostDocumentRequest struct {
-	Title       string `json:"title"`
-	Tags        []string  `json:"tags"`
-	Description string `json:"description"`
+	Title       string   `json:"title"`
+	TagIds      []string `json:"tags"`
+	Description string   `json:"description"`
+}
+
+func (r *PostDocumentRequest) GetTagIds() ([]uuid.UUID, error) {
+	tagIds := make([]uuid.UUID, len(r.TagIds))
+
+	for i, tagId := range r.TagIds {
+		id, err := uuid.Parse(tagId)
+		if err != nil {
+			return nil, err
+		}
+
+		tagIds[i] = id
+	}
+
+	return tagIds, nil
 }
 
 type PatchDocumentRequest struct {
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-	Tags        []string  `json:"tags"`
-	Description string `json:"description"`
+	Id          string   `json:"id"`
+	Title       string   `json:"title"`
+	TagIds      []string `json:"tags"`
+	Description string   `json:"description"`
+}
+
+func (r *PatchDocumentRequest) GetTagIds() ([]uuid.UUID, error) {
+	tagIds := make([]uuid.UUID, len(r.TagIds))
+
+	for i, tagId := range r.TagIds {
+		id, err := uuid.Parse(tagId)
+		if err != nil {
+			return nil, err
+		}
+
+		tagIds[i] = id
+	}
+
+	return tagIds, nil
 }

@@ -76,7 +76,12 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	document, err := h.s.CreateDocument(userId, req.Title, req.Description, req.Tags, file)
+	tagIds, err := req.GetTagIds()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	document, err := h.s.CreateDocument(userId, req.Title, req.Description, tagIds, file)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -104,7 +109,12 @@ func (h *DocumentHandler) PatchDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	document, err := h.s.UpdateDocument(userId, documentId, req.Title, req.Description, req.Tags, file)
+	tagIds, err := req.GetTagIds()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	document, err := h.s.UpdateDocument(userId, documentId, req.Title, req.Description, tagIds, file)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

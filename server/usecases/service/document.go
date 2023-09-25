@@ -31,10 +31,10 @@ func (s *DocumentService) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*
 	return document, nil
 }
 
-func (s *DocumentService) CreateDocument(userId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
-	return s.documentRepository.CreateDocument(userId, title, description, tags, file)
+func (s *DocumentService) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
+	return s.documentRepository.CreateDocument(userId, title, description, tagIds, file)
 }
 
-func (s *DocumentService) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
-	return s.documentRepository.UpdateDocument(userId, documentId, title, description, tags, file)
+func (s *DocumentService) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
+	return s.documentRepository.UpdateDocument(userId, documentId, title, description, tagIds, file)
 }
