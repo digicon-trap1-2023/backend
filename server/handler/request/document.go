@@ -45,7 +45,7 @@ func DocumentsToGetDocumentsResponse(documents []*domain.Document) []GetDocument
 }
 
 type GetDocumentRequest struct {
-	Id string `json:"id" query:"id"`
+	Id string `json:"id" param:"id"`
 }
 
 type GetDocumentResponse struct {

@@ -94,8 +94,8 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	}
 
 	tagIds := make([]string, len(tags))
-	for i, tag := range tagDocuments {
-		tagIds[i] = tag.TagId
+	for _, tag := range tagDocuments {
+		tagIds = append(tagIds, tag.TagId)
 	}
 
 	if err := r.conn.Where("id IN ?", tagIds).Find(&tags).Error; err != nil {
