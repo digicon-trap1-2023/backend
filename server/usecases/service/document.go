@@ -22,6 +22,10 @@ func (s *DocumentService) GetDocuments(userId uuid.UUID, tags []string) ([]*doma
 	return s.documentRepository.GetDocuments(userId, tags)
 }
 
+func (s *DocumentService) GetBookmarkedDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	return s.documentRepository.GetBookmarkedDocuments(userId, tags)
+}
+
 func (s *DocumentService) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {
 	document, err := s.documentRepository.GetDocument(userId, documentId)
 	if err != nil {
