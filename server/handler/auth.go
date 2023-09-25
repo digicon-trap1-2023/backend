@@ -2,16 +2,20 @@ package handler
 
 import (
 	"context"
+	"net/http"
 
+	"github.com/digicon-trap1-2023/backend/handler/request"
+	"github.com/digicon-trap1-2023/backend/usecases/service"
 	"github.com/digicon-trap1-2023/backend/util"
 	"github.com/labstack/echo/v4"
 )
 
 type AuthHandler struct {
+	s *service.AuthService
 }
 
-func NewAuthHandler() *AuthHandler {
-	return &AuthHandler{}
+func NewAuthHandler(s *service.AuthService) *AuthHandler {
+	return &AuthHandler{s}
 }
 
 func (h *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
@@ -23,4 +27,17 @@ func (h *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		c.SetRequest(c.Request().WithContext(newCtx))
 		return next(c)
 	}
+}
+
+func (h *AuthHandler) GetMe(c echo.Context) error {
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+	user, err := h.s.GetUser(userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, request.UserToGetMeResponse(user))
 }
