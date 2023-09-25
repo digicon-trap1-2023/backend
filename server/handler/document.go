@@ -135,7 +135,24 @@ func (h *DocumentHandler) PatchDocument(c echo.Context) error {
 }
 
 func (h *DocumentHandler) DeleteDocument(c echo.Context) error {
-	return nil
+	id := c.Param("id")
+	documentId, err := uuid.Parse(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.s.DeleteDocument(userId, documentId)
+
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *DocumentHandler) PostBookmark(c echo.Context) error {

@@ -210,3 +210,23 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 
 	return document.ToDomain(nil, nil, tagModels)
 }
+
+func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("id = ?", documentId).Delete(&model.Document{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.TagDocument{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
