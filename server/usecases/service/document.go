@@ -42,3 +42,19 @@ func (s *DocumentService) UpdateDocument(userId uuid.UUID, documentId uuid.UUID,
 func (s *DocumentService) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {
 	return s.documentRepository.DeleteDocument(userId, documentId)
 }
+
+func (s *DocumentService) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.BookMark(userId, documentId)
+}
+
+func (s *DocumentService) UnBookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.UnBookMark(userId, documentId)
+}
+
+func (s *DocumentService) Reference(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.Reference(userId, documentId)
+}
+
+func (s *DocumentService) UnReference(userId uuid.UUID, documentId uuid.UUID) error {
+	return s.documentRepository.UnReference(userId, documentId)
+}

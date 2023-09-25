@@ -156,17 +156,81 @@ func (h *DocumentHandler) DeleteDocument(c echo.Context) error {
 }
 
 func (h *DocumentHandler) PostBookmark(c echo.Context) error {
-	return nil
+	id := c.Param("id")
+	documentId, err := uuid.Parse(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.s.BookMark(userId, documentId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *DocumentHandler) DeleteBookmark(c echo.Context) error {
-	return nil
+	id := c.Param("id")
+	documentId, err := uuid.Parse(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.s.UnBookMark(userId, documentId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *DocumentHandler) PostReference(c echo.Context) error {
-	return nil
+	id := c.Param("id")
+	documentId, err := uuid.Parse(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.s.Reference(userId, documentId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *DocumentHandler) DeleteReference(c echo.Context) error {
-	return nil
+	id := c.Param("id")
+	documentId, err := uuid.Parse(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	err = h.s.UnReference(userId, documentId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }

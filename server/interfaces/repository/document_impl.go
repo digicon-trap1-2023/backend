@@ -230,3 +230,45 @@ func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UU
 
 	return nil
 }
+
+func (r *DocumentRepository) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	bookMark := &model.BookMark{
+		UserId:     userId.String(),
+		DocumentId: documentId.String(),
+	}
+
+	if err := r.conn.Create(bookMark).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) UnBookMark(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("user_id = ?", userId).Where("document_id = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) Reference(userId uuid.UUID, documentId uuid.UUID) error {
+	reference := &model.Reference{
+		UserId:     userId.String(),
+		DocumentId: documentId.String(),
+	}
+
+	if err := r.conn.Create(reference).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *DocumentRepository) UnReference(userId uuid.UUID, documentId uuid.UUID) error {
+	if err := r.conn.Where("user_id = ?", userId).Where("document_id = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
