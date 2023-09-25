@@ -22,7 +22,7 @@ func (h *AuthHandler) AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		role := c.Request().Header.Get("X-Role")
-		// userId := c.Request().Header.Get("X-User-Id")
+		// userId := c.Request().Header.Get("X-UserId")
 		ctx = context.WithValue(ctx, util.UserKey, util.SampleUserID().String())
 		newCtx := context.WithValue(ctx, util.RoleKey, role)
 		c.SetRequest(c.Request().WithContext(newCtx))
