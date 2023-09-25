@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"log"
 
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/digicon-trap1-2023/backend/util"
