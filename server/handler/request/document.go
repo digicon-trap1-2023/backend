@@ -20,6 +20,9 @@ type GetDocumentsResponse struct {
 }
 
 func (r *GetDocumentsRequest) ParseTags() []string {
+	if r.Tags == "" {
+		return []string{}
+	}
 	tags := strings.Split(r.Tags, ",")
 	return tags
 }

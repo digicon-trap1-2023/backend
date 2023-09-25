@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"mime/multipart"
 
 	"github.com/digicon-trap1-2023/backend/domain"
@@ -35,18 +36,19 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 		if err := r.conn.Find(&documents).Error; err != nil {
 			return nil, err
 		}
+		for _, document := range documents {
+			docIds = append(docIds, document.Id)
+		}
 	} else {
 		if err := r.conn.Where("tag_id IN ?", tags).Find(&tagDocuments).Error; err != nil {
 			return nil, err
 		}
-	}
-
-	for _, tagDocument := range tagDocuments {
-		docIds = append(docIds, tagDocument.DocumentId)
-	}
-
-	if err := r.conn.Where("id IN ?", docIds).Find(&documents).Error; err != nil {
-		return nil, err
+		for _, tagDocument := range tagDocuments {
+			docIds = append(docIds, tagDocument.DocumentId)
+		}
+		if err := r.conn.Where("id IN ?", docIds).Find(&documents).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	if err := r.conn.Where("document_id IN ?", docIds).Where("user_id = ?", userId).Find(&bookmarks).Error; err != nil {
@@ -67,6 +69,7 @@ func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*d
 		result = append(result, res)
 	}
 
+	fmt.Println("result", result)
 	return result, nil
 }
 
