@@ -232,12 +232,12 @@ func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UU
 }
 
 func (r *DocumentRepository) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
-	bookMark := &model.BookMark{
+	bookmark := &model.BookMark{
 		UserId:     userId.String(),
 		DocumentId: documentId.String(),
 	}
 
-	if err := r.conn.Create(bookMark).Error; err != nil {
+	if err := r.conn.Create(bookmark).Error; err != nil {
 		return err
 	}
 
