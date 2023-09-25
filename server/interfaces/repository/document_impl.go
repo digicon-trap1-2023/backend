@@ -216,15 +216,15 @@ func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UU
 		return err
 	}
 
-	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.TagDocument{}).Error; err != nil {
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.TagDocument{}).Error; err != nil {
 		return err
 	}
 
-	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.BookMark{}).Error; err != nil {
 		return err
 	}
 
-	if err := r.conn.Where("documentId = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
+	if err := r.conn.Where("document_id = ?", documentId).Delete(&model.Reference{}).Error; err != nil {
 		return err
 	}
 
