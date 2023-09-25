@@ -11,9 +11,8 @@ type Tag struct {
 }
 
 type TagDocument struct {
-	Id         string `gorm:"type:char(36);not null;primaryKey"`
-	TagId      string `gorm:"type:char(36)"`
-	DocumentId string `gorm:"type:char(36)"`
+	TagId      string `gorm:"type:char(36);not null;primaryKey"`
+	DocumentId string `gorm:"type:char(36);not null;primaryKey"`
 }
 
 func (tag *Tag) ToDomain() (*domain.Tag, error) {
