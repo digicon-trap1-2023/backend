@@ -1,9 +1,9 @@
 package infrastructure
 
 import (
-	"bytes"
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/digicon-trap1-2023/backend/util"
@@ -49,11 +49,16 @@ func NewClient() (*S3Client, error) {
 		region:         util.ReadEnvs("AWS_REGION"),
 	}, nil
 }
-func (client S3Client) PutObject(ctx context.Context, key string, data []byte) error {
+
+func (client *S3Client) PutObjectMock(key string, data io.ReadSeeker) error {
+	return nil
+}
+
+func (client *S3Client) PutObject(key string, data io.ReadSeeker) error {
 	_, err := client.s3.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(client.fileBucketName),
 		Key:    aws.String(key),
-		Body:   bytes.NewReader(data),
+		Body:   data,
 		ACL:    types.ObjectCannedACL(*aws.String("public-read")),
 	})
 	if err != nil {
@@ -63,6 +68,6 @@ func (client S3Client) PutObject(ctx context.Context, key string, data []byte) e
 	return nil
 }
 
-func (client S3Client) GetObjectUrl(objectKey string) string {
+func (client *S3Client) GetObjectUrl(objectKey string) string {
 	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", client.fileBucketName, client.region, objectKey)
 }
