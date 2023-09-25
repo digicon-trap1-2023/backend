@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/digicon-trap1-2023/backend/domain"
+	"github.com/digicon-trap1-2023/backend/infrastructure"
 	"github.com/digicon-trap1-2023/backend/interfaces/repository/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -9,10 +10,14 @@ import (
 
 type DocumentRepository struct {
 	conn *gorm.DB
+	s3   *infrastructure.S3Client
 }
 
-func NewDocumentRepository(conn *gorm.DB) *DocumentRepository {
-	return &DocumentRepository{conn}
+func NewDocumentRepository(conn *gorm.DB, client *infrastructure.S3Client) *DocumentRepository {
+	return &DocumentRepository{
+		conn: conn,
+		s3:   client,
+	}
 }
 
 func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
