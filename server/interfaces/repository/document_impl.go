@@ -1,13 +1,16 @@
 package repository
 
 import (
+	"fmt"
 	"mime/multipart"
 
 	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/digicon-trap1-2023/backend/infrastructure"
 	"github.com/digicon-trap1-2023/backend/interfaces/repository/model"
+	"github.com/digicon-trap1-2023/backend/util"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type DocumentRepository struct {
@@ -97,10 +100,130 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	return document.ToDomain(bookmarks, references, tags)
 }
 
-func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error){
-	return nil, nil
+func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
+	var tagModels []*model.Tag
+	fileData, err := file.Open()
+	if err != nil {
+		return nil, err
+	}
+
+	defer fileData.Close()
+	fileId := util.NewID().String()
+
+	if err := r.s3.PutObject(fileId, fileData); err != nil {
+		return nil, err
+	}
+
+	document := &model.Document{
+		Id:          util.NewID().String(),
+		Title:       title,
+		File:        fileId,
+		Description: description,
+	}
+	if err := r.conn.Where("name IN ?", tags).Find(&tagModels).Error; err != nil {
+		return nil, err
+	}
+
+	tagNameToID := make(map[string]string)
+	for _, tagModel := range tagModels {
+		tagNameToID[tagModel.Name] = tagModel.Id
+	}
+
+	tagDocuments := make([]*model.TagDocument, 0, len(tags))
+	for _, tagName := range tags {
+		tagID, exists := tagNameToID[tagName]
+		if !exists {
+			return nil, fmt.Errorf("Tag ID not found for tag name: %s", tagName)
+		}
+
+		tagDocument := &model.TagDocument{
+			TagId:      tagID,
+			DocumentId: document.Id,
+		}
+		tagDocuments = append(tagDocuments, tagDocument)
+	}
+
+	if err := r.conn.Create(&tagDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Create(document).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Create(&tagDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	return document.ToDomain(nil, nil, tagModels)
 }
 
-func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error){
-	return nil, nil
+func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error) {
+	var tagModels []*model.Tag
+	var document model.Document
+	var tagDocuments []*model.TagDocument
+	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
+		return nil, err
+	}
+
+	if file != nil {
+		fileData, err := file.Open()
+		if err != nil {
+			return nil, err
+		}
+
+		defer fileData.Close()
+		document.File = util.NewID().String()
+
+		if err := r.s3.PutObjectMock(document.File, fileData); err != nil {
+			return nil, err
+		}
+	}
+
+	if title != "" {
+		document.Title = title
+	}
+
+	if description != "" {
+		document.Description = description
+	}
+
+	if err := r.conn.Where("name IN ?", tags).Find(&tagModels).Error; err != nil {
+		return nil, err
+	}
+
+	tagNameToID := make(map[string]string)
+	for _, tagModel := range tagModels {
+		tagNameToID[tagModel.Name] = tagModel.Id
+	}
+
+	tagDocuments = make([]*model.TagDocument, 0, len(tags))
+	for _, tagName := range tags {
+		tagID, exists := tagNameToID[tagName]
+		if !exists {
+			return nil, fmt.Errorf("Tag ID not found for tag name: %s", tagName)
+		}
+
+		tagDocument := &model.TagDocument{
+			TagId:      tagID,
+			DocumentId: document.Id,
+		}
+		tagDocuments = append(tagDocuments, tagDocument)
+	}
+
+	if err := r.conn.Clauses(clause.OnConflict{
+		UpdateAll: true,
+	}).Create(&tagDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Model(&document).Updates(model.Document{
+		Title:       document.Title,
+		Description: document.Description,
+		File:        document.File,
+	}).Error; err != nil {
+		return nil, err
+	}
+
+	return document.ToDomain(nil, nil, tagModels)
 }
