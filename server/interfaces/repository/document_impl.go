@@ -124,6 +124,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 
 	document := &model.Document{
 		Id:          util.NewID().String(),
+		UserId:      userId.String(),
 		Title:       title,
 		File:        fileId,
 		Description: description,
@@ -157,6 +158,10 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 	var document model.Document
 	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
 		return nil, err
+	}
+
+	if document.UserId != userId.String() {
+		return nil, fmt.Errorf("this document is not yours")
 	}
 
 	if file != nil {
@@ -212,6 +217,15 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 }
 
 func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {
+	var document model.Document
+	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
+		return err
+	}
+
+	if document.UserId != userId.String() {
+		return fmt.Errorf("this document is not yours")
+	}
+
 	if err := r.conn.Where("id = ?", documentId).Delete(&model.Document{}).Error; err != nil {
 		return err
 	}
