@@ -23,3 +23,14 @@ func GetUserId(ctx echo.Context) (uuid.UUID, error) {
 
 	return useId, nil
 }
+
+func GetRole(ctx echo.Context) (string, error) {
+	roleInterface := ctx.Request().Context().Value(util.RoleKey)
+
+	role, ok := roleInterface.(string)
+	if !ok {
+		return "", echo.NewHTTPError(http.StatusInternalServerError, "role is not string")
+	}
+
+	return role, nil
+}
