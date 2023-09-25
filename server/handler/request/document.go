@@ -69,3 +69,15 @@ func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentRespons
 	}
 }
 
+type PostDocumentRequest struct {
+	Title       string `json:"title"`
+	Tags        []string  `json:"tags"`
+	Description string `json:"description"`
+}
+
+type PatchDocumentRequest struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Tags        []string  `json:"tags"`
+	Description string `json:"description"`
+}

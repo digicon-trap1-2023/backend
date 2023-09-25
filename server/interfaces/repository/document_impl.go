@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"mime/multipart"
+
 	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/digicon-trap1-2023/backend/infrastructure"
 	"github.com/digicon-trap1-2023/backend/interfaces/repository/model"
@@ -93,4 +95,12 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	}
 
 	return document.ToDomain(bookmarks, references, tags)
+}
+
+func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error){
+	return nil, nil
+}
+
+func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tags []string, file *multipart.FileHeader) (*domain.Document, error){
+	return nil, nil
 }
