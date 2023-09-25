@@ -16,6 +16,9 @@ services:
       DB_HOSTNAME: mysql
       DB_PORT: 3306
       DB_DATABASE: digicon_trap1
+      AWS_LAMBDA_URL: https://bnixaqzsrcyhxgiuywfoynpf4y0jhcby.lambda-url.us-east-1.on.aws/
+      AWS_S3_BUCKET_NAME: digicon-trap1-public
+      AWS_REGION: us-east-1
     ports:
       - "8080:8080"
   mysql:

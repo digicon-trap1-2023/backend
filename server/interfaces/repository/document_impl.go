@@ -110,15 +110,11 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 
 func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
 	var tagModels []*model.Tag
-	fileData, err := file.Open()
-	if err != nil {
-		return nil, err
-	}
 
-	defer fileData.Close()
 	fileId := util.NewID().String()
 
-	if err := r.s3.PutObjectMock(fileId, fileData); err != nil {
+	fileUrl, err := r.s3.PutObject(fileId, file); 
+	if err != nil {
 		return nil, err
 	}
 
@@ -126,7 +122,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		Id:          util.NewID().String(),
 		UserId:      userId.String(),
 		Title:       title,
-		File:        fileId,
+		File:        fileUrl,
 		Description: description,
 	}
 	var tagDocuments []*model.TagDocument
@@ -165,17 +161,12 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 	}
 
 	if file != nil {
-		fileData, err := file.Open()
+		fileUrl, err := r.s3.PutObject(document.File, file)
 		if err != nil {
 			return nil, err
 		}
 
-		defer fileData.Close()
-		document.File = util.NewID().String()
-
-		if err := r.s3.PutObjectMock(document.File, fileData); err != nil {
-			return nil, err
-		}
+		document.File = fileUrl
 	}
 
 	if title != "" {

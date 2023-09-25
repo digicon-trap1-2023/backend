@@ -1,7 +1,7 @@
-INSERT INTO `documents` (`id`, `title`, `description`, `file`)
+INSERT INTO `documents` (`id`, `title`, `description`, `file`, `user_id`)
 VALUES 
-('00000000-0000-0000-0002-000000000001', 'Title', 'Description1', '00000000-0000-0000-0006-000000000001'),
-('00000000-0000-0000-0002-000000000002', 'Title2', 'Description2', '00000000-0000-0000-0006-000000000001');
+('00000000-0000-0000-0002-000000000001', 'Title', 'Description1', 'https://digicon-trap1-public.s3.amazonaws.com/image/adf50b88-6655-40fa-bfed-0c71aaceb8c2.png', '00000000-0000-0000-0000-000000000001'),
+('00000000-0000-0000-0002-000000000002', 'Title2', 'Description2', 'https://digicon-trap1-public.s3.amazonaws.com/image/1.png', '00000000-0000-0000-0000-000000000001');
 
 INSERT INTO `book_marks` (`id`, `user_id`, `document_id`)
 VALUES 

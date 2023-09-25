@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client, err := infrastructure.NewClient()
+	client, err := infrastructure.NewS3Client()
 	if err != nil {
 		log.Fatal(err)
 	}

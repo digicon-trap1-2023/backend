@@ -1,52 +1,68 @@
 package infrastructure
 
 import (
-	"context"
+	"bytes"
 	"fmt"
 	"io"
+	"mime/multipart"
+	"net/http"
+	"strings"
 
-	"github.com/aws/aws-sdk-go-v2/credentials"
+	"encoding/base64"
+	"encoding/json"
+
 	"github.com/digicon-trap1-2023/backend/util"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 
 	_ "image/jpeg"
 	_ "image/png"
 )
 
 type S3Client struct {
-	s3             *s3.Client
+	lambdaUrl      string
 	fileBucketName string
-	region         string
 }
 
-func NewClient() (*S3Client, error) {
-	sdkConfig, err := config.LoadDefaultConfig(context.Background())
+type S3PutRequest struct {
+	File        string `json:"file"`
+	FileId      string `json:"file_id"`
+	ContentType string `json:"content_type"`
+}
 
+func postRequest(url string, req *S3PutRequest) error {
+	body, err := json.Marshal(req)
 	if err != nil {
-		sdkConfig, err = config.LoadDefaultConfig(
-			context.TODO(),
-			config.WithCredentialsProvider(
-				credentials.NewStaticCredentialsProvider(
-					util.ReadEnvs("AWS_ACCESS_KEY"),
-					util.ReadEnvs("AWS_SECRET_KEY"),
-					""),
-			),
-			config.WithRegion(util.ReadEnvs("AWS_REGION")),
-		)
-		if err != nil {
-			return nil, err
-		}
+		return err
+	}
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	if err != nil {
+		return err
 	}
 
-	s3 := s3.NewFromConfig(sdkConfig)
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != http.StatusOK {
+		fmt.Println(response)
+		return fmt.Errorf("failed to post request: %s", response.Status)
+	}
+
+	return nil
+}
+
+func getExtension(contentType string) string {
+	
+	return ""
+}
+
+func NewS3Client() (*S3Client, error) {
 	return &S3Client{
-		s3:             s3,
+		lambdaUrl:      util.ReadEnvs("AWS_LAMBDA_URL"),
 		fileBucketName: util.ReadEnvs("AWS_S3_BUCKET_NAME"),
-		region:         util.ReadEnvs("AWS_REGION"),
 	}, nil
 }
 
@@ -54,20 +70,41 @@ func (client *S3Client) PutObjectMock(key string, data io.ReadSeeker) error {
 	return nil
 }
 
-func (client *S3Client) PutObject(key string, data io.ReadSeeker) error {
-	_, err := client.s3.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String(client.fileBucketName),
-		Key:    aws.String(key),
-		Body:   data,
-		ACL:    types.ObjectCannedACL(*aws.String("public-read")),
-	})
+func (client *S3Client) PutObject(key string, fh *multipart.FileHeader) (string, error) {
+	file, err := fh.Open()
 	if err != nil {
-		return err
+		return "", err
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	encoded := base64.StdEncoding.EncodeToString(data)
+
+	contentType := fh.Header.Get("Content-Type")
+	
+	parts := strings.Split(contentType, "/")
+	extension := ""
+	if len(parts) > 1 {
+		extension = parts[1]
+	}
+
+	req := &S3PutRequest{
+		File:        encoded,
+		FileId:      key,
+		ContentType: contentType,
+	}
+
+	if err := postRequest(client.lambdaUrl, req); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s.%s", client.GetObjectUrl(key), extension), nil
 }
 
 func (client *S3Client) GetObjectUrl(objectKey string) string {
-	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", client.fileBucketName, client.region, objectKey)
+	return fmt.Sprintf("https://%s.s3.amazonaws.com/image/%s", client.fileBucketName, objectKey)
 }
