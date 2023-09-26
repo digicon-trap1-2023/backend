@@ -47,6 +47,7 @@ func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) 
 	var docIds []string
 	var documents []*model.Document
 	var references []*model.Reference
+	var users []*model.User
 
 	if len(tags) == 0 {
 		if err := r.conn.Find(&documents).Error; err != nil {
@@ -72,9 +73,23 @@ func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) 
 		return nil, err
 	}
 
+	userIds := make([]string, len(references))
+	for i, reference := range references {
+		userIds[i] = reference.UserId
+	}
+
+	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	userMap := make(map[string]string)
+	for _, user := range users {
+		userMap[user.Id] = user.Name
+	}
+
 	var result []*domain.Document
 	for _, document := range documents {
-		res, err := document.ToOtherDomain(references, nil)
+		res, err := document.ToOtherDomain(references, userMap, nil)
 		if err != nil {
 			return nil, err
 		}

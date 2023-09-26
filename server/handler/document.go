@@ -74,12 +74,14 @@ func (h *DocumentHandler) GetOtherDocuments(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusForbidden, "You are not allowed to get other documents")
 	}
 
-	documents, err := h.s.GetOtherDocuments(userId, req.ParseTags(), false)
+	referenceFilter := req.Type == "referenced"
+
+	documents, err := h.s.GetOtherDocuments(userId, req.ParseTags(), referenceFilter)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
+	return c.JSON(http.StatusOK, request.DocumentsToGetOtherDocumentsResponse(documents))
 }
 
 func (h *DocumentHandler) GetDocument(c echo.Context) error {

@@ -40,12 +40,12 @@ func SetUpRouter(e *echo.Echo, api API) {
 
 	otherGroup := e.Group("/other")
 	{
-		otherGroup.GET("", nil)
+		otherGroup.GET("/documents", api.Document.GetOtherDocuments)
 	}
 
 	bookmarkGroup := e.Group("/bookmark")
 	{
-		bookmarkGroup.GET("/documents", api.Document.GetOtherDocuments)
+		bookmarkGroup.GET("", nil)
 	}
 
 	documentsGroup := e.Group("/documents")
