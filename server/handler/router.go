@@ -7,6 +7,7 @@ type API struct {
 	Bookmark *BookMarkHandler
 	Document *DocumentHandler
 	Tag      *TagHandler
+	Request  *RequestHandler
 	Ping     *PingHandler
 }
 
@@ -16,6 +17,7 @@ func NewAPI(
 	bookmark *BookMarkHandler,
 	document *DocumentHandler,
 	tag *TagHandler,
+	request *RequestHandler,
 ) API {
 	return API{
 		Auth:     auth,
@@ -23,6 +25,7 @@ func NewAPI(
 		Document: document,
 		Tag:      tag,
 		Ping:     ping,
+		Request:  request,
 	}
 }
 
@@ -65,6 +68,13 @@ func SetUpRouter(e *echo.Echo, api API) {
 	{
 		tagGroup.GET("", api.Tag.GetTags)
 		tagGroup.POST("", api.Tag.PostTag)
+	}
+
+	requestGroup := e.Group("/requests")
+	{
+		requestGroup.GET("", api.Request.GetRequests)
+		requestGroup.POST("", nil)
+		requestGroup.DELETE("/:id", nil)
 	}
 
 	e.Logger.Fatal(e.Start(":8080"))

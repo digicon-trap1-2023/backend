@@ -19,5 +19,6 @@ func AllTables() []interface{} {
 		&model.TagDocument{},
 		&model.Tag{},
 		&model.Reference{},
+		&model.Request{},
 	}
 }
