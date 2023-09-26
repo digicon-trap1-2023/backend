@@ -18,12 +18,19 @@ func NewDocumentService(documentRepository *repository.DocumentRepository) *Docu
 	}
 }
 
-func (s *DocumentService) GetDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
-	return s.documentRepository.GetDocuments(userId, tags)
+func (s *DocumentService) GetWriterDocuments(userId uuid.UUID, tags []string, bookmarkFilter bool) ([]*domain.Document, error) {
+	if bookmarkFilter {
+		return s.documentRepository.GetBookmarkedDocuments(userId, tags)
+	}
+	return s.documentRepository.GetWriterDocuments(userId, tags)
 }
 
-func (s *DocumentService) GetBookmarkedDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
-	return s.documentRepository.GetBookmarkedDocuments(userId, tags)
+func (s *DocumentService) GetOtherDocuments(userId uuid.UUID, tags []string, referencedFilter bool) ([]*domain.Document, error) {
+	if referencedFilter {
+		return s.documentRepository.GetReferencedOtherDocuments(userId, tags)
+	}
+
+	return s.documentRepository.GetOtherDocuments(userId, tags)
 }
 
 func (s *DocumentService) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {
