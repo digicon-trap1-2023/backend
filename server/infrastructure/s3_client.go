@@ -54,11 +54,6 @@ func postRequest(url string, req *S3PutRequest) error {
 	return nil
 }
 
-func getExtension(contentType string) string {
-	
-	return ""
-}
-
 func NewS3Client() (*S3Client, error) {
 	return &S3Client{
 		lambdaUrl:      util.ReadEnvs("AWS_LAMBDA_URL"),

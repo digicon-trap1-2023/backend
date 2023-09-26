@@ -4,9 +4,16 @@ import "github.com/google/uuid"
 
 type Key int
 
+type Role string
+
 const (
 	UserKey Key = iota
 	RoleKey
+)
+
+const (
+	Writer Role = "writer"
+	Other Role = "other"
 )
 
 func SampleUserID() uuid.UUID {

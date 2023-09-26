@@ -24,7 +24,7 @@ func GetUserId(ctx echo.Context) (uuid.UUID, error) {
 	return useId, nil
 }
 
-func GetRole(ctx echo.Context) (string, error) {
+func GetRole(ctx echo.Context) (util.Role, error) {
 	roleInterface := ctx.Request().Context().Value(util.RoleKey)
 
 	role, ok := roleInterface.(string)
@@ -32,5 +32,13 @@ func GetRole(ctx echo.Context) (string, error) {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "role is not string")
 	}
 
-	return role, nil
+	if role == ""{
+		return util.Other, nil
+	}
+
+	return util.Role(role), nil
+}
+
+func IsWriter(role util.Role) bool {
+	return role == util.Writer
 }

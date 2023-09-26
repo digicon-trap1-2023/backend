@@ -25,7 +25,11 @@ func NewDocumentRepository(conn *gorm.DB, client *infrastructure.S3Client) *Docu
 	}
 }
 
-func (r *DocumentRepository) GetDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	return nil, nil
+}
+
+func (r *DocumentRepository) GetWriterDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
 	var tagDocuments []model.TagDocument
 	var docIds []string
 	var documents []*model.Document

@@ -29,8 +29,16 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return err
 	}
 
+	role, err := request.GetRole(c)
+	if err != nil {
+		return err
+	}
+
 	if req.Type == "bookmark" {
-		documents, err := h.s.GetBookmarkedDocuments(userId, req.ParseTags())
+		if !request.IsWriter(role) {
+			return echo.NewHTTPError(http.StatusForbidden, "You are not allowed to get bookmarked documents")
+		}
+		documents, err := h.s.GetDocuments(userId, req.ParseTags(), role, true)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
@@ -38,7 +46,7 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
 	}
 
-	documents, err := h.s.GetDocuments(userId, req.ParseTags())
+	documents, err := h.s.GetDocuments(userId, req.ParseTags(), role, false)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
