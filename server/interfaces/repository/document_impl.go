@@ -25,12 +25,64 @@ func NewDocumentRepository(conn *gorm.DB, client *infrastructure.S3Client) *Docu
 	}
 }
 
-func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
-	return nil, nil
+func (r *DocumentRepository) GetReferencedOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	documents, err := r.GetOtherDocuments(userId, tags)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*domain.Document
+	for _, document := range documents {
+		if document.Referenced {
+			result = append(result, document)
+		}
+	}
+
+	return result, nil
 }
 
-func (r *DocumentRepository) GetReferencedOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
-	return nil, nil
+func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	var tagDocuments []*model.TagDocument
+	var docIds []string
+	var documents []*model.Document
+	var references []*model.Reference
+
+	if len(tags) == 0 {
+		if err := r.conn.Find(&documents).Error; err != nil {
+			return nil, err
+		}
+
+		for _, document := range documents {
+			docIds = append(docIds, document.Id)
+		}
+	} else {
+		if err := r.conn.Where("tag_id IN ?", tags).Find(&tagDocuments).Error; err != nil {
+			return nil, err
+		}
+		for _, tagDocument := range tagDocuments {
+			docIds = append(docIds, tagDocument.DocumentId)
+		}
+		if err := r.conn.Where("id IN ?", docIds).Find(&documents).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	if err := r.conn.Where("document_id IN ?", docIds).Find(&references).Error; err != nil {
+		return nil, err
+	}
+
+	var result []*domain.Document
+	for _, document := range documents {
+		res, err := document.ToOtherDomain(references, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, res)
+	}
+
+	return result, nil
 }
 
 func (r *DocumentRepository) GetWriterDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
@@ -169,7 +221,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 
 	fileId := util.NewID().String()
 
-	fileUrl, err := r.s3.PutObject(fileId, file); 
+	fileUrl, err := r.s3.PutObject(fileId, file)
 	if err != nil {
 		return nil, err
 	}

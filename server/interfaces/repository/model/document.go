@@ -61,3 +61,41 @@ func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Referen
 		Referenced:  referenced,
 	}, nil
 }
+
+func (d *Document) ToOtherDomain(userReferences []*Reference, tags []*Tag) (*domain.Document, error) {
+	id, err := uuid.Parse(d.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	userId, err := uuid.Parse(d.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	referenceUsers := make([]string, 0)
+	for _, userReference := range userReferences {
+		if userReference.DocumentId == d.Id {
+			referenceUsers = append(referenceUsers, userReference.UserId)
+		}
+	}
+
+	tagsDomain := make([]*domain.Tag, len(tags))
+	for i, tag := range tags {
+		tagsDomain[i], err = tag.ToDomain()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &domain.Document{
+		Id:             id,
+		UserId:         userId,
+		Title:          d.Title,
+		File:           d.File,
+		Description:    d.Description,
+		Tags:           tagsDomain,
+		Referenced:     len(referenceUsers) > 0,
+		ReferenceUsers: referenceUsers,
+	}, nil
+}
