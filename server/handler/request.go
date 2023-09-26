@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/digicon-trap1-2023/backend/usecases/service"
 	"github.com/labstack/echo/v4"
 )
@@ -14,5 +16,10 @@ func NewRequestHandler(s *service.RequestService) *RequestHandler {
 }
 
 func (h *RequestHandler) GetRequests(c echo.Context) error {
-	return nil
+	requests, err := h.s.GetRequests()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, requests)
 }
