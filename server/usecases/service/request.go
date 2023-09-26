@@ -24,3 +24,7 @@ func (s *RequestService) CreateRequest(userId uuid.UUID, Tags []uuid.UUID, Title
 	request := domain.NewRequest(Title, Description, Tags, userId)
 	return s.requestRepository.CreateRequest(request)
 }
+
+func (s *RequestService) DeleteRequest(userId uuid.UUID, requestId uuid.UUID) error {
+	return s.requestRepository.DeleteRequest(userId, requestId)
+}

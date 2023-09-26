@@ -5,6 +5,7 @@ import (
 
 	"github.com/digicon-trap1-2023/backend/handler/request"
 	"github.com/digicon-trap1-2023/backend/usecases/service"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -47,4 +48,27 @@ func (h *RequestHandler) PostRequest(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, request.RequestToPostRequestResponse(domainRequest))
+}
+
+func (h *RequestHandler) DeleteRequest(c echo.Context) error {
+	var req request.DeleteRequestRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	requestId, err := uuid.Parse(req.Id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	if err := h.s.DeleteRequest(userId, requestId); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }

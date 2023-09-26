@@ -70,3 +70,16 @@ func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Requ
 
 	return request, nil
 }
+
+func (r *RequestRepository) DeleteRequest(userId uuid.UUID, requestId uuid.UUID) error {
+	var request *model.Request
+	if err := r.conn.First(&request, "id = ? AND user_id = ?", requestId, userId).Error; err != nil {
+		return err
+	}
+
+	if err := r.conn.Delete(&model.Request{}, requestId).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

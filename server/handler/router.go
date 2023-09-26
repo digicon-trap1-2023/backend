@@ -74,7 +74,7 @@ func SetUpRouter(e *echo.Echo, api API) {
 	{
 		requestGroup.GET("", api.Request.GetRequests)
 		requestGroup.POST("", api.Request.PostRequest)
-		requestGroup.DELETE("/:id", nil)
+		requestGroup.DELETE("/:id", api.Request.DeleteRequest)
 	}
 
 	e.Logger.Fatal(e.Start(":8080"))
