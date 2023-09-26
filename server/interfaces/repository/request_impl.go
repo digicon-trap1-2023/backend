@@ -47,3 +47,26 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 
 	return result, nil
 }
+
+func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Request, error) {
+	requestModel, err := model.RequestToModel(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Create(requestModel).Error; err != nil {
+		return nil, err
+	}
+
+	for _, tag := range request.Tags {
+		tagRequest := &model.TagRequest{
+			RequestId: request.Id.String(),
+			TagId:     tag.String(),
+		}
+		if err := r.conn.Create(tagRequest).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return request, nil
+}

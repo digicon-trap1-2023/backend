@@ -73,7 +73,7 @@ func SetUpRouter(e *echo.Echo, api API) {
 	requestGroup := e.Group("/requests")
 	{
 		requestGroup.GET("", api.Request.GetRequests)
-		requestGroup.POST("", nil)
+		requestGroup.POST("", api.Request.PostRequest)
 		requestGroup.DELETE("/:id", nil)
 	}
 

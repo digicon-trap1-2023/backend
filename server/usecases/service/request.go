@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/digicon-trap1-2023/backend/interfaces/repository"
+	"github.com/google/uuid"
 )
 
 type RequestService struct {
@@ -16,10 +17,10 @@ func NewRequestService(requestRepository *repository.RequestRepository) *Request
 }
 
 func (s *RequestService) GetRequests() ([]*domain.Request, error) {
-	requests, err := s.requestRepository.GetRequests()
-	if err != nil {
-		return nil, err
-	}
+	return s.requestRepository.GetRequests()
+}
 
-	return requests, nil
+func (s *RequestService) CreateRequest(userId uuid.UUID, Tags []uuid.UUID, Title string, Description string) (*domain.Request, error) {
+	request := domain.NewRequest(Title, Description, Tags, userId)
+	return s.requestRepository.CreateRequest(request)
 }

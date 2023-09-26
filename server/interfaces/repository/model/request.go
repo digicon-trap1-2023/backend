@@ -36,3 +36,14 @@ func (request *Request) ToDomain(tags []uuid.UUID) (*domain.Request, error) {
 		CreatedBy:   userId,
 	}, nil
 }
+
+func RequestToModel(request *domain.Request) (*Request, error) {
+	id := request.Id.String()
+	userId := request.CreatedBy.String()
+	return &Request{
+		Id:          id,
+		Title:       request.Title,
+		Description: request.Description,
+		UserId:      userId,
+	}, nil
+}
