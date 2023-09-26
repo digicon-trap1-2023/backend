@@ -33,7 +33,7 @@ func GetRole(ctx echo.Context) (util.Role, error) {
 	}
 
 	if role == ""{
-		return util.Other, nil
+		return util.Reader, nil
 	}
 
 	return util.Role(role), nil
@@ -44,5 +44,5 @@ func IsWriter(role util.Role) bool {
 }
 
 func IsOther(role util.Role) bool {
-	return role == util.Other
+	return role == util.Reader
 }
