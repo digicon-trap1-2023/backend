@@ -98,7 +98,7 @@ func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []str
 			taggedDocIds[i] = tagDocument.DocumentId
 		}
 
-		bookmarkedDocIds = intersection(bookmarkedDocIds, taggedDocIds)
+		bookmarkedDocIds = util.Intersection(bookmarkedDocIds, taggedDocIds)
 	}
 
 	if err := r.conn.Where("id IN ?", bookmarkedDocIds).Find(&documents).Error; err != nil {
@@ -119,22 +119,6 @@ func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []str
 	}
 
 	return result, nil
-}
-
-// intersection function is used to intersect two string slices (in this case, DocIds)
-func intersection(a, b []string) (c []string) {
-	m := make(map[string]bool)
-
-	for _, item := range a {
-		m[item] = true
-	}
-
-	for _, item := range b {
-		if _, ok := m[item]; ok {
-			c = append(c, item)
-		}
-	}
-	return
 }
 
 func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {
