@@ -5,7 +5,6 @@ import (
 
 	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/digicon-trap1-2023/backend/interfaces/repository"
-	"github.com/digicon-trap1-2023/backend/util"
 	"github.com/google/uuid"
 )
 
@@ -19,15 +18,19 @@ func NewDocumentService(documentRepository *repository.DocumentRepository) *Docu
 	}
 }
 
-func (s *DocumentService) GetDocuments(userId uuid.UUID, tags []string, role util.Role, bookmarkFilter bool) ([]*domain.Document, error) {
-	if role == util.Writer {
-		if bookmarkFilter {
-			return s.documentRepository.GetBookmarkedDocuments(userId, tags)
-		}
-		return s.documentRepository.GetWriterDocuments(userId, tags)
-	} else {
-		return s.documentRepository.GetOtherDocuments(userId, tags)
+func (s *DocumentService) GetWriterDocuments(userId uuid.UUID, tags []string, bookmarkFilter bool) ([]*domain.Document, error) {
+	if bookmarkFilter {
+		return s.documentRepository.GetBookmarkedDocuments(userId, tags)
 	}
+	return s.documentRepository.GetWriterDocuments(userId, tags)
+}
+
+func (s *DocumentService) GetOtherDocuments(userId uuid.UUID, tags []string, referencedFilter bool) ([]*domain.Document, error) {
+	if referencedFilter {
+		return s.documentRepository.GetReferencedOtherDocuments(userId, tags)
+	}
+
+	return s.documentRepository.GetOtherDocuments(userId, tags)
 }
 
 func (s *DocumentService) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*domain.Document, error) {

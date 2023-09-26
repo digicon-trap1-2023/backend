@@ -29,6 +29,10 @@ func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) 
 	return nil, nil
 }
 
+func (r *DocumentRepository) GetReferencedOtherDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
+	return nil, nil
+}
+
 func (r *DocumentRepository) GetWriterDocuments(userId uuid.UUID, tags []string) ([]*domain.Document, error) {
 	var tagDocuments []model.TagDocument
 	var docIds []string

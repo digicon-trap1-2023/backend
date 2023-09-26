@@ -74,6 +74,36 @@ func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentRespons
 	}
 }
 
+func DocumentsToGetOtherDocumentsResponse(documents []*domain.Document) []GetOtherDocumentsResponse {
+	getOtherDocumentsResponse := make([]GetOtherDocumentsResponse, len(documents))
+
+	for i, document := range documents {
+		getOtherDocumentsResponse[i] = DocumentToGetOtherDocumentsResponse(document)
+	}
+
+	return getOtherDocumentsResponse
+}
+
+type GetOtherDocumentsResponse struct {
+	Id             string   `json:"id"`
+	Title          string   `json:"title"`
+	File           string   `json:"file"`
+	Tags           []Tag    `json:"tags"`
+	Referenced     bool     `json:"referenced"`
+	ReferenceUsers []string `json:"reference_users"`
+}
+
+func DocumentToGetOtherDocumentsResponse(document *domain.Document) GetOtherDocumentsResponse {
+	return GetOtherDocumentsResponse{
+		Id:             document.Id.String(),
+		Title:          document.Title,
+		File:           document.File,
+		Tags:           ConvertTags(document.Tags),
+		Referenced:     document.Referenced,
+		ReferenceUsers: document.ReferenceUsers,
+	}
+}
+
 type PostDocumentRequest struct {
 	Title       string   `json:"title"`
 	TagIds      []string `json:"tags"`

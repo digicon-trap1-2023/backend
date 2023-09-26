@@ -38,9 +38,14 @@ func SetUpRouter(e *echo.Echo, api API) {
 
 	e.GET("/me", api.Auth.GetMe)
 
+	otherGroup := e.Group("/other")
+	{
+		otherGroup.GET("", nil)
+	}
+
 	bookmarkGroup := e.Group("/bookmark")
 	{
-		bookmarkGroup.GET("", nil)
+		bookmarkGroup.GET("/documents", api.Document.GetOtherDocuments)
 	}
 
 	documentsGroup := e.Group("/documents")

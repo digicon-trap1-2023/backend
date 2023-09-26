@@ -38,7 +38,7 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		if !request.IsWriter(role) {
 			return echo.NewHTTPError(http.StatusForbidden, "You are not allowed to get bookmarked documents")
 		}
-		documents, err := h.s.GetDocuments(userId, req.ParseTags(), role, true)
+		documents, err := h.s.GetWriterDocuments(userId, req.ParseTags(), true)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
@@ -46,7 +46,35 @@ func (h *DocumentHandler) GetDocuments(c echo.Context) error {
 		return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
 	}
 
-	documents, err := h.s.GetDocuments(userId, req.ParseTags(), role, false)
+	documents, err := h.s.GetWriterDocuments(userId, req.ParseTags(), false)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, request.DocumentsToGetDocumentsResponse(documents))
+}
+
+func (h *DocumentHandler) GetOtherDocuments(c echo.Context) error {
+	var req request.GetDocumentsRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	userId, err := request.GetUserId(c)
+	if err != nil {
+		return err
+	}
+
+	role, err := request.GetRole(c)
+	if err != nil {
+		return err
+	}
+
+	if !request.IsOther(role) {
+		return echo.NewHTTPError(http.StatusForbidden, "You are not allowed to get other documents")
+	}
+
+	documents, err := h.s.GetOtherDocuments(userId, req.ParseTags(), false)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

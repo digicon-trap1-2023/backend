@@ -42,3 +42,7 @@ func GetRole(ctx echo.Context) (util.Role, error) {
 func IsWriter(role util.Role) bool {
 	return role == util.Writer
 }
+
+func IsOther(role util.Role) bool {
+	return role == util.Other
+}
