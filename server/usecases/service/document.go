@@ -42,8 +42,8 @@ func (s *DocumentService) GetDocument(userId uuid.UUID, documentId uuid.UUID) (*
 	return document, nil
 }
 
-func (s *DocumentService) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
-	return s.documentRepository.CreateDocument(userId, title, description, tagIds, file)
+func (s *DocumentService) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader, relatedRequestID string) (*domain.Document, error) {
+	return s.documentRepository.CreateDocument(userId, title, description, tagIds, file, relatedRequestID)
 }
 
 func (s *DocumentService) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {

@@ -112,6 +112,14 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 	title := c.FormValue("title")
 	description := c.FormValue("description")
 	tagsRaw := c.FormValue("tags")
+	relatedRequestIDString := c.FormValue("related_request")
+	if relatedRequestIDString != "" {
+		// validationだけ
+		_, err := uuid.Parse(relatedRequestIDString)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+	}
 
 	var tagIdStrings []string
 	err := json.Unmarshal([]byte(tagsRaw), &tagIdStrings)
@@ -134,7 +142,7 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	document, err := h.s.CreateDocument(userId, title, description, tagIds, file)
+	document, err := h.s.CreateDocument(userId, title, description, tagIds, file, relatedRequestIDString)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

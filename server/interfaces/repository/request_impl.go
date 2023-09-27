@@ -83,3 +83,32 @@ func (r *RequestRepository) DeleteRequest(userId uuid.UUID, requestId uuid.UUID)
 
 	return nil
 }
+
+func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain.Request, error) {
+	var requests []*model.Request
+	var requestDocuments []*model.RequestDocument
+	var documents []*model.Document
+	if err := r.conn.Where("user_id = ?", userId).Find(&requests).Error; err != nil {
+		return nil, err
+	}
+
+	reqIds := make([]string, len(requests))
+	for i, request := range requests {
+		reqIds[i] = request.Id
+	}
+
+	if err := r.conn.Where("request_id IN ?", reqIds).Find(&requestDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	docIds := make([]string, len(requestDocuments))
+	for i, requestDocument := range requestDocuments {
+		docIds[i] = requestDocument.DocumentId
+	}
+
+	if err := r.conn.Where("id IN ?", docIds).Find(&documents).Error; err != nil {
+		return nil, err
+	}
+
+	return model.RequestsToDomain(requests, requestDocuments, documents)
+}
