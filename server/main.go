@@ -25,6 +25,8 @@ func main() {
 			},
 			AllowHeaders: []string{
 				echo.HeaderOrigin,
+				"X-Role",
+				"X-UserId",
 			},
 			AllowOrigins: []string{
 				"https://digi-con2023-trap-1.trap.show",
