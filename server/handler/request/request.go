@@ -22,8 +22,12 @@ func RequestsToGetRequestsResponse(requests []*domain.Request) []*GetRequestsRes
 
 func RequestToGetRequestsResponse(request *domain.Request) *GetRequestsResponse {
 	tags := make([]string, len(request.Tags))
+	if len(request.Tags) == 0 {
+		tags = make([]string, 0)
+	}else {
 	for i, tag := range request.Tags {
 		tags[i] = tag.String()
+	}
 	}
 
 	return &GetRequestsResponse{
