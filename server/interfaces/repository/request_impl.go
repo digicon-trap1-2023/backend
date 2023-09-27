@@ -88,6 +88,7 @@ func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain
 	var requests []*model.Request
 	var requestDocuments []*model.RequestDocument
 	var documents []*model.Document
+	var users []*model.User
 	if err := r.conn.Where("user_id = ?", userId).Find(&requests).Error; err != nil {
 		return nil, err
 	}
@@ -110,5 +111,14 @@ func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain
 		return nil, err
 	}
 
-	return model.RequestsToDomain(requests, requestDocuments, documents)
+	userIds := make([]string, len(documents))
+	for i, document := range documents {
+		userIds[i] = document.UserId
+	}
+
+	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	return model.RequestsToDomain(requests, requestDocuments, documents, users)
 }

@@ -19,13 +19,8 @@ func (Document) TableName() string {
 	return "documents"
 }
 
-func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Reference, tags []*Tag) (*domain.Document, error) {
+func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Reference, tags []*Tag, userName string) (*domain.Document, error) {
 	id, err := uuid.Parse(d.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	userId, err := uuid.Parse(d.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +49,7 @@ func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Referen
 
 	return &domain.Document{
 		Id:          id,
-		UserId:      userId,
+		UserName:    userName,
 		Title:       d.Title,
 		File:        d.File,
 		FileHeight:  d.FileHeight,
@@ -99,7 +94,7 @@ func (d *Document) ToOtherDomain(userReferences []*Reference, userMap map[string
 
 	return &domain.Document{
 		Id:             id,
-		UserId:         userId,
+		UserName:       userMap[userId.String()],
 		Title:          d.Title,
 		File:           d.File,
 		FileHeight:     d.FileHeight,

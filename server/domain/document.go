@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type Document struct {
 	Id             uuid.UUID `json:"id"`
-	UserId         uuid.UUID `json:"userId"`
+	UserName       string    `json:"user_name"`
 	Title          string    `json:"title"`
 	File           string    `json:"file"`
 	FileHeight     int       `json:"file_height"`

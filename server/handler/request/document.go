@@ -20,6 +20,7 @@ type GetDocumentsResponse struct {
 	FileWidth  int    `json:"file_width"`
 	BookMarked bool   `json:"bookmarked"`
 	Referenced bool   `json:"referenced"`
+	UserName   string `json:"user_name"`
 }
 
 func (r *GetDocumentsRequest) ParseTags() []string {
@@ -39,6 +40,7 @@ func DocumentToGetDocumentsResponse(document *domain.Document) GetDocumentsRespo
 		FileWidth:  document.FileWidth,
 		BookMarked: document.BookMarked,
 		Referenced: document.Referenced,
+		UserName:   document.UserName,
 	}
 }
 
@@ -66,6 +68,7 @@ type GetDocumentResponse struct {
 	Description string `json:"description"`
 	BookMarked  bool   `json:"bookmarked"`
 	Referenced  bool   `json:"referenced"`
+	UserName    string `json:"user_name"`
 }
 
 func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentResponse {
@@ -79,6 +82,7 @@ func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentRespons
 		Description: document.Description,
 		BookMarked:  document.BookMarked,
 		Referenced:  document.Referenced,
+		UserName:    document.UserName,
 	}
 }
 
@@ -101,6 +105,7 @@ type GetOtherDocumentsResponse struct {
 	Tags           []Tag    `json:"tags"`
 	Referenced     bool     `json:"referenced"`
 	ReferenceUsers []string `json:"reference_users"`
+	UserName       string   `json:"user_name"`
 }
 
 func DocumentToGetOtherDocumentsResponse(document *domain.Document) GetOtherDocumentsResponse {
@@ -113,6 +118,7 @@ func DocumentToGetOtherDocumentsResponse(document *domain.Document) GetOtherDocu
 		Tags:           ConvertTags(document.Tags),
 		Referenced:     document.Referenced,
 		ReferenceUsers: document.ReferenceUsers,
+		UserName:       document.UserName,
 	}
 }
 
