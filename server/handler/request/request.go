@@ -67,3 +67,15 @@ func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse 
 type DeleteRequestRequest struct {
 	Id string `json:"id" param:"id"`
 }
+
+type GetRequestsWithDocumentResponse struct {
+	Id        string              `json:"id"`
+	Title     string              `json:"title"`
+	Documents []*DocumentResponse `json:"documents"`
+}
+
+type DocumentResponse struct {
+	Id    string `json:"id"`
+	Title string `json:"title"`
+	FileUrl  string `json:"file_url"`
+}

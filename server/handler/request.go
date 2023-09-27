@@ -72,3 +72,14 @@ func (h *RequestHandler) DeleteRequest(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, nil)
 }
+
+func (h *RequestHandler) GetRequestsWithDocument(c echo.Context) error {
+	userId, err := request.GetUserId(c)
+	
+	requests, err := h.s.GetRequestsWithDocument(userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, request.RequestsToGetRequestsWithDocumentResponse(requests))
+}

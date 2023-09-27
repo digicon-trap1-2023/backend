@@ -83,3 +83,30 @@ func (r *RequestRepository) DeleteRequest(userId uuid.UUID, requestId uuid.UUID)
 
 	return nil
 }
+
+func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain.Request, error) {
+	var requests []*model.Request
+	var tags map[string][]uuid.UUID
+	var tagRequests []*model.TagRequest
+	var requestDocuments []*model.RequestDocument
+	var documents []*model.Document
+	var userReferences []*model.Reference
+	var userMap map[string]string
+	if err := r.conn.Find(&requests).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Find(&tagRequests).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Find(&requestDocuments).Error; err != nil {
+		return nil, err
+	}
+
+	if err := r.conn.Find(&documents).Error; err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

@@ -74,6 +74,7 @@ func SetUpRouter(e *echo.Echo, api API) {
 	{
 		requestGroup.GET("", api.Request.GetRequests)
 		requestGroup.POST("", api.Request.PostRequest)
+		requestGroup.GET("/withDocument", api.Request.GetRequestsWithDocument)
 		requestGroup.DELETE("/:id", api.Request.DeleteRequest)
 	}
 

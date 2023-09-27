@@ -28,3 +28,7 @@ func (s *RequestService) CreateRequest(userId uuid.UUID, Tags []uuid.UUID, Title
 func (s *RequestService) DeleteRequest(userId uuid.UUID, requestId uuid.UUID) error {
 	return s.requestRepository.DeleteRequest(userId, requestId)
 }
+
+func (s *RequestService) GetRequestsWithDocument(userId uuid.UUID) ([]*domain.Request, error) {
+	return s.requestRepository.GetRequestsWithDocument(userId)
+}
