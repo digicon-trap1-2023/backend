@@ -6,6 +6,7 @@ import (
 )
 
 func v1() *gormigrate.Migration {
+
 	return &gormigrate.Migration{
 		ID: "1",
 		Migrate: func(db *gorm.DB) error {

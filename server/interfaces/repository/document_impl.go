@@ -231,7 +231,7 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	return document.ToDomain(bookmarks, references, tags)
 }
 
-func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
+func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader, relatedRequestID string) (*domain.Document, error) {
 	var tagModels []*model.Tag
 
 	fileId := util.NewID().String()
@@ -263,6 +263,16 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 
 	if err := r.conn.Create(document).Error; err != nil {
 		return nil, err
+	}
+
+	if relatedRequestID != "" {
+		request := &model.RequestDocument{
+			RequestId:  relatedRequestID,
+			DocumentId: document.Id,
+		}
+		if err := r.conn.Create(request).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	if err := r.conn.Where("id IN ?", tagIds).Find(&tagModels).Error; err != nil {
