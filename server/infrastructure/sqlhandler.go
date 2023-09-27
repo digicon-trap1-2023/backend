@@ -63,6 +63,25 @@ func newGormConfig() *gorm.Config {
 }
 
 func newDsnConfig() *sqldriver.Config {
+	if os.Getenv("NEOSHOWCASE") == "true" {
+		return &sqldriver.Config{
+			User:   util.ReadEnvs("NS_MARIADB_USER"),
+			Passwd: util.ReadEnvs("NS_MARIADB_PASSWORD"),
+			Net:    "tcp",
+			Addr: fmt.Sprintf(
+				"%s:%s",
+				util.ReadEnvs("NS_MARIADB_HOSTNAME"),
+				util.ReadEnvs("NS_MARIADB_PORT"),
+			),
+			DBName:    util.ReadEnvs("NS_MARIADB_DATABASE"),
+			Collation: "utf8mb4_general_ci",
+			ParseTime:            true,
+			AllowNativePasswords: true,
+			Params: map[string]string{
+				"charset": "utf8mb4",
+			},
+		}
+	}
 	return &sqldriver.Config{
 		User:                 util.ReadEnvs("DB_USERNAME"),
 		Passwd:               util.ReadEnvs("DB_PASSWORD"),
