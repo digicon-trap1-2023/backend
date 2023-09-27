@@ -45,7 +45,7 @@ func (request *Request) ToDomain(tags []uuid.UUID, tagsMap map[string]string, us
 		Tags:            tags,
 		TagNames:        tagNames,
 		CreatedBy:       userId,
-		CreatedUserName: "",
+		CreatedUserName: userName,
 	}, nil
 }
 
