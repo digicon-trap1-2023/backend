@@ -32,8 +32,8 @@ func main() {
 			},
 			AllowOrigins: []string{
 				"https://digi-con2023-trap-1.trap.show",
-				"http://localhost",
-				"https://localhost",
+				"http://localhost:5173",
+				"https://localhost:5173",
 			},
 		}))
 
