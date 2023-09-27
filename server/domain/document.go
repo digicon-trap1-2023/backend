@@ -13,3 +13,8 @@ type Document struct {
 	Referenced     bool      `json:"referenced"`
 	ReferenceUsers []string  `json:"reference_users"`
 }
+
+type Size struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+}

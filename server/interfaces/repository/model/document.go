@@ -11,6 +11,8 @@ type Document struct {
 	Title       string `gorm:"type:varchar(40)"`
 	Description string `gorm:"type:varchar(200)"`
 	File        string `gorm:"type:varchar(200)"`
+	FileWidth   int    `gorm:"type:int"`
+	FileHeight  int    `gorm:"type:int"`
 }
 
 func (Document) TableName() string {
