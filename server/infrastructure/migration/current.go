@@ -17,8 +17,10 @@ func AllTables() []interface{} {
 		&model.BookMark{},
 		&model.Document{},
 		&model.TagDocument{},
+		&model.TagRequest{},
 		&model.Tag{},
 		&model.Reference{},
 		&model.Request{},
+		&model.RequestDocument{},
 	}
 }
