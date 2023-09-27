@@ -100,6 +100,7 @@ func (client *S3Client) PutObject(key string, fh *multipart.FileHeader) (string,
 		return "", nil, err
 	}
 
+	file.Seek(0, 0)
 	config, _, err := image.DecodeConfig(file)
 	if err != nil {
 		return "", nil, err
