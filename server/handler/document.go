@@ -122,9 +122,13 @@ func (h *DocumentHandler) PostDocument(c echo.Context) error {
 	}
 
 	var tagIdStrings []string
-	err := json.Unmarshal([]byte(tagsRaw), &tagIdStrings)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse tags")
+	if tagsRaw == "" {
+		tagIdStrings = []string{}
+	} else {
+		err := json.Unmarshal([]byte(tagsRaw), &tagIdStrings)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse tags")
+		}
 	}
 
 	userId, err := request.GetUserId(c)
