@@ -27,10 +27,12 @@ func main() {
 	documentRepository := repository.NewDocumentRepository(db, client)
 	tagRepository := repository.NewTagRepository(db)
 	userRepository := repository.NewUserRepository(db)
+	requestRepository := repository.NewRequestRepository(db)
 
 	authService := service.NewAuthService(userRepository)
 	documentService := service.NewDocumentService(documentRepository)
 	tagService := service.NewTagService(tagRepository)
+	requestService := service.NewRequestService(requestRepository)
 
 	api := handler.NewAPI(
 		handler.NewPingHandler(),
@@ -38,6 +40,7 @@ func main() {
 		handler.NewBookMarkHandler(),
 		handler.NewDocumentHandler(documentService),
 		handler.NewTagHandler(tagService),
+		handler.NewRequestHandler(requestService),
 	)
 
 	handler.SetUpRouter(e, api)

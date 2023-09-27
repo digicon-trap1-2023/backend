@@ -105,9 +105,10 @@ func DocumentToGetOtherDocumentsResponse(document *domain.Document) GetOtherDocu
 }
 
 type PostDocumentRequest struct {
-	Title       string   `json:"title"`
-	TagIds      []string `json:"tags"`
-	Description string   `json:"description"`
+	Title          string   `json:"title"`
+	TagIds         []string `json:"tags"`
+	Description    string   `json:"description"`
+	RelatedRequest string   `json:"related_request; omitempty"`
 }
 
 func GetTagIds(tagIdStrings []string) ([]uuid.UUID, error) {
