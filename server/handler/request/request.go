@@ -21,20 +21,11 @@ func RequestsToGetRequestsResponse(requests []*domain.Request) []*GetRequestsRes
 }
 
 func RequestToGetRequestsResponse(request *domain.Request) *GetRequestsResponse {
-	tags := make([]string, len(request.Tags))
-	if len(request.Tags) == 0 {
-		tags = make([]string, 0)
-	}else {
-	for i, tag := range request.Tags {
-		tags[i] = tag.String()
-	}
-	}
-
 	return &GetRequestsResponse{
 		Id:          request.Id.String(),
 		Title:       request.Title,
 		Description: request.Description,
-		Tags:        tags,
+		Tags:        request.TagNames,
 		CreatedBy:   request.CreatedBy.String(),
 	}
 }
@@ -54,16 +45,11 @@ type PostRequestResponse struct {
 }
 
 func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse {
-	tags := make([]string, len(request.Tags))
-	for i, tag := range request.Tags {
-		tags[i] = tag.String()
-	}
-
 	return &PostRequestResponse{
 		Id:          request.Id.String(),
 		Title:       request.Title,
 		Description: request.Description,
-		Tags:        tags,
+		Tags:        request.TagNames,
 		CreatedBy:   request.CreatedBy.String(),
 	}
 }

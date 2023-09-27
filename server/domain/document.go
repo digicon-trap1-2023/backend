@@ -11,6 +11,7 @@ type Document struct {
 	FileWidth      int       `json:"file_width"`
 	Description    string    `json:"description"`
 	Tags           []*Tag    `json:"tags"`
+	TagNames       []string  `json:"tag_names"`
 	BookMarked     bool      `json:"bookmarked"`
 	Referenced     bool      `json:"referenced"`
 	ReferenceUsers []string  `json:"reference_users"`

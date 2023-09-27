@@ -17,8 +17,10 @@ func NewRequestRepository(conn *gorm.DB) *RequestRepository {
 
 func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 	var requests []*model.Request
-	var tags map[string][]uuid.UUID
+	var tagReqsMap map[string][]uuid.UUID
 	var tagRequests []*model.TagRequest
+	var tags []*model.Tag
+
 	if err := r.conn.Find(&requests).Error; err != nil {
 		return nil, err
 	}
@@ -27,18 +29,29 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 		return nil, err
 	}
 
-	tags = make(map[string][]uuid.UUID)
+	tagReqsMap = make(map[string][]uuid.UUID)
+	tagIds := make([]string, len(tagRequests))
 	for _, tagRequest := range tagRequests {
 		tagId, err := uuid.Parse(tagRequest.TagId)
 		if err != nil {
 			return nil, err
 		}
-		tags[tagRequest.RequestId] = append(tags[tagRequest.RequestId], tagId)
+		tagReqsMap[tagRequest.RequestId] = append(tagReqsMap[tagRequest.RequestId], tagId)
+		tagIds = append(tagIds, tagRequest.TagId)
+	}
+
+	if err := r.conn.Where("id IN ?", tagIds).Find(&tags).Error; err != nil {
+		return nil, err
+	}
+
+	tagMap := make(map[string]string)
+	for _, tag := range tags {
+		tagMap[tag.Id] = tag.Name
 	}
 
 	result := make([]*domain.Request, 0)
 	for _, request := range requests {
-		req, err := request.ToDomain(tags[request.Id])
+		req, err := request.ToDomain(tagReqsMap[request.Id], tagMap)
 		if err != nil {
 			return nil, err
 		}
@@ -49,6 +62,8 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 }
 
 func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Request, error) {
+	var tags []*model.Tag
+	
 	requestModel, err := model.RequestToModel(request)
 	if err != nil {
 		return nil, err
@@ -58,6 +73,7 @@ func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Requ
 		return nil, err
 	}
 
+	tagIDs := make([]string, 0)
 	for _, tag := range request.Tags {
 		tagRequest := &model.TagRequest{
 			RequestId: request.Id.String(),
@@ -66,7 +82,19 @@ func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Requ
 		if err := r.conn.Create(tagRequest).Error; err != nil {
 			return nil, err
 		}
+		tagIDs = append(tagIDs, tag.String())
 	}
+
+	if err := r.conn.Where("id IN ?", tagIDs).Find(&tags).Error; err != nil {
+		return nil, err
+	}
+
+	tagNames := make([]string, len(tags))
+	for i, tag := range tags {
+		tagNames[i] = tag.Name
+	}
+
+	request.TagNames = tagNames
 
 	return request, nil
 }
