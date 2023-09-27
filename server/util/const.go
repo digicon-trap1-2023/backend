@@ -13,7 +13,7 @@ const (
 
 const (
 	Writer Role = "writer"
-	Other Role = "other"
+	Reader Role = "reader"
 )
 
 func SampleUserID() uuid.UUID {
