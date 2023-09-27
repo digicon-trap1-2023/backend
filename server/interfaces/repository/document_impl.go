@@ -257,8 +257,10 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		tagDocuments = append(tagDocuments, tagDocument)
 	}
 
-	if err := r.conn.Create(&tagDocuments).Error; err != nil {
-		return nil, err
+	if len(tagDocuments) != 0 {
+		if err := r.conn.Create(&tagDocuments).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	if err := r.conn.Create(document).Error; err != nil {

@@ -88,7 +88,7 @@ func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain
 	var requests []*model.Request
 	var requestDocuments []*model.RequestDocument
 	var documents []*model.Document
-	if err := r.conn.Where("user_id = ?").Find(&requests).Error; err != nil {
+	if err := r.conn.Where("user_id = ?", userId).Find(&requests).Error; err != nil {
 		return nil, err
 	}
 
