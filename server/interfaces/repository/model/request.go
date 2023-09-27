@@ -22,7 +22,7 @@ type RequestDocument struct {
 	DocumentId string `gorm:"type:char(36);not null;primaryKey"`
 }
 
-func (request *Request) ToDomain(tags []uuid.UUID, tagsMap map[string]string) (*domain.Request, error) {
+func (request *Request) ToDomain(tags []uuid.UUID, tagsMap map[string]string, userName string) (*domain.Request, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, err
@@ -39,12 +39,13 @@ func (request *Request) ToDomain(tags []uuid.UUID, tagsMap map[string]string) (*
 	}
 
 	return &domain.Request{
-		Id:          id,
-		Title:       request.Title,
-		Description: request.Description,
-		Tags:        tags,
-		TagNames:    tagNames,
-		CreatedBy:   userId,
+		Id:              id,
+		Title:           request.Title,
+		Description:     request.Description,
+		Tags:            tags,
+		TagNames:        tagNames,
+		CreatedBy:       userId,
+		CreatedUserName: "",
 	}, nil
 }
 
@@ -103,11 +104,12 @@ func requestToDomain(request *Request, documentIds []string, documentsMap map[st
 		documents[i] = document
 	}
 	return &domain.Request{
-		Id:              id,
-		Title:           request.Title,
-		Description:     request.Description,
-		Tags:            nil,
-		CreatedBy:       userId,
+		Id:               id,
+		Title:            request.Title,
+		Description:      request.Description,
+		Tags:             nil,
+		CreatedBy:        userId,
+		CreatedUserName:  userNamesMap[request.UserId],
 		RelatedDocuments: documents,
 	}, nil
 }

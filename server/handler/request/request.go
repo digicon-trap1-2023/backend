@@ -26,7 +26,7 @@ func RequestToGetRequestsResponse(request *domain.Request) *GetRequestsResponse 
 		Title:       request.Title,
 		Description: request.Description,
 		Tags:        request.TagNames,
-		CreatedBy:   request.CreatedBy.String(),
+		CreatedBy:   request.CreatedUserName,
 	}
 }
 
@@ -50,7 +50,7 @@ func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse 
 		Title:       request.Title,
 		Description: request.Description,
 		Tags:        request.TagNames,
-		CreatedBy:   request.CreatedBy.String(),
+		CreatedBy:   request.CreatedUserName,
 	}
 }
 

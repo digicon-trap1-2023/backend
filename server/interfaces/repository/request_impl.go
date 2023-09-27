@@ -49,9 +49,24 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 		tagMap[tag.Id] = tag.Name
 	}
 
+	userIds := make([]string, len(requests))
+	for i, request := range requests {
+		userIds[i] = request.UserId
+	}
+
+	var users []*model.User
+	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	userNamesMap := make(map[string]string)
+	for _, user := range users {
+		userNamesMap[user.Id] = user.Name
+	}
+
 	result := make([]*domain.Request, 0)
 	for _, request := range requests {
-		req, err := request.ToDomain(tagReqsMap[request.Id], tagMap)
+		req, err := request.ToDomain(tagReqsMap[request.Id], tagMap, userNamesMap[request.UserId])
 		if err != nil {
 			return nil, err
 		}
@@ -143,6 +158,7 @@ func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain
 	for i, document := range documents {
 		userIds[i] = document.UserId
 	}
+	userIds = append(userIds, userId.String())
 
 	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
 		return nil, err

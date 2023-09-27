@@ -9,6 +9,7 @@ type Request struct {
 	Tags             []uuid.UUID `json:"tags"`
 	TagNames		 []string    `json:"tag_names"`
 	CreatedBy        uuid.UUID   `json:"created_by"`
+	CreatedUserName  string      `json:"created_user_name"`
 	RelatedDocuments []*Document `json:"related_document"`
 }
 
