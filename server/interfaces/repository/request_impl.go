@@ -36,7 +36,7 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 		tags[tagRequest.RequestId] = append(tags[tagRequest.RequestId], tagId)
 	}
 
-	result := make([]*domain.Request, len(requests))
+	result := make([]*domain.Request, 0)
 	for _, request := range requests {
 		req, err := request.ToDomain(tags[request.Id])
 		if err != nil {
