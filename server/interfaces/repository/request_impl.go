@@ -86,27 +86,29 @@ func (r *RequestRepository) DeleteRequest(userId uuid.UUID, requestId uuid.UUID)
 
 func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain.Request, error) {
 	var requests []*model.Request
-	var tags map[string][]uuid.UUID
-	var tagRequests []*model.TagRequest
 	var requestDocuments []*model.RequestDocument
 	var documents []*model.Document
-	var userReferences []*model.Reference
-	var userMap map[string]string
-	if err := r.conn.Find(&requests).Error; err != nil {
+	if err := r.conn.Where("user_id = ?").Find(&requests).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.conn.Find(&tagRequests).Error; err != nil {
+	reqIds := make([]string, len(requests))
+	for i, request := range requests {
+		reqIds[i] = request.Id
+	}
+
+	if err := r.conn.Where("request_id IN ?", reqIds).Find(&requestDocuments).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.conn.Find(&requestDocuments).Error; err != nil {
+	docIds := make([]string, len(requestDocuments))
+	for i, requestDocument := range requestDocuments {
+		docIds[i] = requestDocument.DocumentId
+	}
+
+	if err := r.conn.Where("id IN ?", docIds).Find(&documents).Error; err != nil {
 		return nil, err
 	}
 
-	if err := r.conn.Find(&documents).Error; err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return model.RequestsToDomain(requests, requestDocuments, documents)
 }

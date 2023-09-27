@@ -79,3 +79,34 @@ type DocumentResponse struct {
 	Title string `json:"title"`
 	FileUrl  string `json:"file_url"`
 }
+
+func RequestsToGetRequestsWithDocumentResponse(request []*domain.Request) []*GetRequestsWithDocumentResponse {
+	getRequestsWithDocumentResponse := make([]*GetRequestsWithDocumentResponse, len(request))
+
+	for i, request := range request {
+		getRequestsWithDocumentResponse[i] = RequestToGetRequestsWithDocumentResponse(request)
+	}
+
+	return getRequestsWithDocumentResponse
+}
+
+func RequestToGetRequestsWithDocumentResponse(request *domain.Request) *GetRequestsWithDocumentResponse {
+	documents := make([]*DocumentResponse, len(request.RelatedDocuments))
+	for i, document := range request.RelatedDocuments {
+		documents[i] = DocumentToDocumentResponse(document)
+	}
+
+	return &GetRequestsWithDocumentResponse{
+		Id:        request.Id.String(),
+		Title:     request.Title,
+		Documents: documents,
+	}
+}
+
+func DocumentToDocumentResponse(document *domain.Document) *DocumentResponse {
+	return &DocumentResponse{
+		Id:    document.Id.String(),
+		Title: document.Title,
+		FileUrl:  document.File,
+	}
+}

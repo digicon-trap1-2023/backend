@@ -8,7 +8,7 @@ type Request struct {
 	Description     string      `json:"description"`
 	Tags            []uuid.UUID `json:"tags"`
 	CreatedBy       uuid.UUID   `json:"created_by"`
-	RelatedDocument []*Document `json:"related_document"`
+	RelatedDocuments []*Document `json:"related_document"`
 }
 
 func NewRequest(title string, description string, tags []uuid.UUID, createdBy uuid.UUID) *Request {
