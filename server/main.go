@@ -25,6 +25,8 @@ func main() {
 			},
 			AllowHeaders: []string{
 				echo.HeaderOrigin,
+				echo.HeaderContentType,
+				echo.HeaderAccept,
 				"X-Role",
 				"X-UserId",
 			},
