@@ -78,6 +78,14 @@ func (r *DocumentRepository) GetOtherDocuments(userId uuid.UUID, tags []string) 
 		userIds[i] = reference.UserId
 	}
 
+	for _, document := range documents {
+		userId, err := uuid.Parse(document.UserId)
+		if err != nil {
+			return nil, err
+		}
+		userIds = append(userIds, userId.String())
+	}
+
 	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
 		return nil, err
 	}
@@ -106,6 +114,7 @@ func (r *DocumentRepository) GetWriterDocuments(userId uuid.UUID, tags []string)
 	var documents []*model.Document
 	var bookmarks []*model.BookMark
 	var references []*model.Reference
+	var user *model.User
 
 	if len(tags) == 0 {
 		if err := r.conn.Find(&documents).Error; err != nil {
@@ -134,9 +143,13 @@ func (r *DocumentRepository) GetWriterDocuments(userId uuid.UUID, tags []string)
 		return nil, err
 	}
 
+	if err := r.conn.Where("id = ?", userId).First(&user).Error; err != nil {
+		return nil, err
+	}
+
 	var result []*domain.Document
 	for _, document := range documents {
-		res, err := document.ToDomain(bookmarks, references, nil)
+		res, err := document.ToDomain(bookmarks, references, nil, user.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -154,6 +167,7 @@ func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []str
 	var tagDocuments []*model.TagDocument
 	var documents []*model.Document
 	var references []*model.Reference
+	var users []*model.User
 
 	if err := r.conn.Where("user_id = ?", userId).Find(&bookmarks).Error; err != nil {
 		return nil, err
@@ -184,9 +198,27 @@ func (r *DocumentRepository) GetBookmarkedDocuments(userId uuid.UUID, tags []str
 		return nil, err
 	}
 
+	userIds := make([]string, len(references))
+	for _, document := range documents {
+		userId, err := uuid.Parse(document.UserId)
+		if err != nil {
+			return nil, err
+		}
+		userIds = append(userIds, userId.String())
+	}
+
+	if err := r.conn.Where("id IN ?", userIds).Find(&users).Error; err != nil {
+		return nil, err
+	}
+
+	userMap := make(map[string]string)
+	for _, user := range users {
+		userMap[user.Id] = user.Name
+	}
+
 	var result []*domain.Document
 	for _, document := range documents {
-		res, err := document.ToDomain(bookmarks, references, nil)
+		res, err := document.ToDomain(bookmarks, references, nil, userMap[document.UserId])
 		if err != nil {
 			return nil, err
 		}
@@ -202,6 +234,7 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 	var references []*model.Reference
 	var tagDocuments []*model.TagDocument
 	var tags []*model.Tag
+	var user model.User
 
 	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
 		return nil, err
@@ -219,6 +252,10 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 		return nil, err
 	}
 
+	if err := r.conn.Where("id = ?", document.UserId).First(&user).Error; err != nil {
+		return nil, err
+	}
+
 	tagIds := make([]string, len(tags))
 	for _, tag := range tagDocuments {
 		tagIds = append(tagIds, tag.TagId)
@@ -228,11 +265,12 @@ func (r *DocumentRepository) GetDocument(userId uuid.UUID, documentId uuid.UUID)
 		return nil, err
 	}
 
-	return document.ToDomain(bookmarks, references, tags)
+	return document.ToDomain(bookmarks, references, tags, user.Name)
 }
 
 func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader, relatedRequestID string) (*domain.Document, error) {
 	var tagModels []*model.Tag
+	var user model.User
 
 	fileId := util.NewID().String()
 
@@ -283,12 +321,18 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		return nil, err
 	}
 
-	return document.ToDomain(nil, nil, tagModels)
+	if err := r.conn.Where("id = ?", userId).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return document.ToDomain(nil, nil, tagModels, user.Name)
 }
 
 func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UUID, title string, description string, tagIds []uuid.UUID, file *multipart.FileHeader) (*domain.Document, error) {
 	var tagModels []*model.Tag
 	var document model.Document
+	var user model.User
+
 	if err := r.conn.Where("id = ?", documentId).First(&document).Error; err != nil {
 		return nil, err
 	}
@@ -345,7 +389,11 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 		return nil, err
 	}
 
-	return document.ToDomain(nil, nil, tagModels)
+	if err := r.conn.Where("id = ?", userId).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return document.ToDomain(nil, nil, tagModels, user.Name)
 }
 
 func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UUID) error {

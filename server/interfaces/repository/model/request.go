@@ -53,7 +53,7 @@ func RequestToModel(request *domain.Request) (*Request, error) {
 	}, nil
 }
 
-func RequestsToDomain(requests []*Request, requestDocuments []*RequestDocument, documents []*Document) ([]*domain.Request, error) {
+func RequestsToDomain(requests []*Request, requestDocuments []*RequestDocument, documents []*Document, users []*User) ([]*domain.Request, error) {
 	requestsDomain := make([]*domain.Request, len(requests))
 	requestDocumentsMap := make(map[string][]string)
 	for _, requestDocument := range requestDocuments {
@@ -63,9 +63,13 @@ func RequestsToDomain(requests []*Request, requestDocuments []*RequestDocument, 
 	for _, document := range documents {
 		documentsMap[document.Id] = document
 	}
+	userNamesMap := make(map[string]string)
+	for _, user := range users {
+		userNamesMap[user.Id] = user.Name
+	}
 
 	for i, request := range requests {
-		requestDomain, err := requestToDomain(request, requestDocumentsMap[request.Id], documentsMap)
+		requestDomain, err := requestToDomain(request, requestDocumentsMap[request.Id], documentsMap, userNamesMap)
 		if err != nil {
 			return nil, err
 		}
@@ -74,7 +78,7 @@ func RequestsToDomain(requests []*Request, requestDocuments []*RequestDocument, 
 	return requestsDomain, nil
 }
 
-func requestToDomain(request *Request, documentIds []string, documentsMap map[string]*Document) (*domain.Request, error) {
+func requestToDomain(request *Request, documentIds []string, documentsMap map[string]*Document, userNamesMap map[string]string) (*domain.Request, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, err
@@ -85,7 +89,8 @@ func requestToDomain(request *Request, documentIds []string, documentsMap map[st
 	}
 	documents := make([]*domain.Document, len(documentIds))
 	for i, documentId := range documentIds {
-		document, err := documentsMap[documentId].ToDomain(nil, nil, nil)
+		documentModel := documentsMap[documentId]
+		document, err := documentModel.ToDomain(nil, nil, nil, userNamesMap[documentModel.UserId])
 		if err != nil {
 			return nil, err
 		}
