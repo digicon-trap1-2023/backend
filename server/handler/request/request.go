@@ -75,9 +75,11 @@ type GetRequestsWithDocumentResponse struct {
 }
 
 type DocumentResponse struct {
-	Id    string `json:"id"`
-	Title string `json:"title"`
-	FileUrl  string `json:"file_url"`
+	Id         string `json:"id"`
+	Title      string `json:"title"`
+	FileUrl    string `json:"file_url"`
+	FileHeight int    `json:"file_height"`
+	FileWidth  int    `json:"file_width"`
 }
 
 func RequestsToGetRequestsWithDocumentResponse(request []*domain.Request) []*GetRequestsWithDocumentResponse {
@@ -105,8 +107,10 @@ func RequestToGetRequestsWithDocumentResponse(request *domain.Request) *GetReque
 
 func DocumentToDocumentResponse(document *domain.Document) *DocumentResponse {
 	return &DocumentResponse{
-		Id:    document.Id.String(),
-		Title: document.Title,
-		FileUrl:  document.File,
+		Id:         document.Id.String(),
+		Title:      document.Title,
+		FileUrl:    document.File,
+		FileHeight: document.FileHeight,
+		FileWidth:  document.FileWidth,
 	}
 }

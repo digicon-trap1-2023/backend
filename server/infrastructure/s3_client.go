@@ -11,6 +11,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
+	"image"
+
+	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/digicon-trap1-2023/backend/util"
 
 	_ "image/jpeg"
@@ -65,22 +68,22 @@ func (client *S3Client) PutObjectMock(key string, data io.ReadSeeker) error {
 	return nil
 }
 
-func (client *S3Client) PutObject(key string, fh *multipart.FileHeader) (string, error) {
+func (client *S3Client) PutObject(key string, fh *multipart.FileHeader) (string, *domain.Size, error) {
 	file, err := fh.Open()
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	defer file.Close()
 
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	encoded := base64.StdEncoding.EncodeToString(data)
 
 	contentType := fh.Header.Get("Content-Type")
-	
+
 	parts := strings.Split(contentType, "/")
 	extension := ""
 	if len(parts) > 1 {
@@ -94,10 +97,16 @@ func (client *S3Client) PutObject(key string, fh *multipart.FileHeader) (string,
 	}
 
 	if err := postRequest(client.lambdaUrl, req); err != nil {
-		return "", err
+		return "", nil, err
 	}
 
-	return fmt.Sprintf("%s.%s", client.GetObjectUrl(key), extension), nil
+	file.Seek(0, 0)
+	config, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return "", nil, err
+	}
+
+	return fmt.Sprintf("%s.%s", client.GetObjectUrl(key), extension), &domain.Size{Height: config.Height, Width: config.Width}, nil
 }
 
 func (client *S3Client) GetObjectUrl(objectKey string) string {

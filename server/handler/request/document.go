@@ -16,6 +16,8 @@ type GetDocumentsResponse struct {
 	Id         string `json:"id"`
 	Title      string `json:"title"`
 	File       string `json:"file"`
+	FileHeight int    `json:"file_height"`
+	FileWidth  int    `json:"file_width"`
 	BookMarked bool   `json:"bookmarked"`
 	Referenced bool   `json:"referenced"`
 }
@@ -33,6 +35,8 @@ func DocumentToGetDocumentsResponse(document *domain.Document) GetDocumentsRespo
 		Id:         document.Id.String(),
 		Title:      document.Title,
 		File:       document.File,
+		FileHeight: document.FileHeight,
+		FileWidth:  document.FileWidth,
 		BookMarked: document.BookMarked,
 		Referenced: document.Referenced,
 	}
@@ -56,6 +60,8 @@ type GetDocumentResponse struct {
 	Id          string `json:"id"`
 	Title       string `json:"title"`
 	File        string `json:"file"`
+	FileHeight  int    `json:"file_height"`
+	FileWidth   int    `json:"file_width"`
 	Tags        []Tag  `json:"tags"`
 	Description string `json:"description"`
 	BookMarked  bool   `json:"bookmarked"`
@@ -67,6 +73,8 @@ func DocumentToGetDocumentResponse(document *domain.Document) GetDocumentRespons
 		Id:          document.Id.String(),
 		Title:       document.Title,
 		File:        document.File,
+		FileHeight:  document.FileHeight,
+		FileWidth:   document.FileWidth,
 		Tags:        ConvertTags(document.Tags),
 		Description: document.Description,
 		BookMarked:  document.BookMarked,
@@ -88,6 +96,8 @@ type GetOtherDocumentsResponse struct {
 	Id             string   `json:"id"`
 	Title          string   `json:"title"`
 	File           string   `json:"file"`
+	FileHeight     int      `json:"file_height"`
+	FileWidth      int      `json:"file_width"`
 	Tags           []Tag    `json:"tags"`
 	Referenced     bool     `json:"referenced"`
 	ReferenceUsers []string `json:"reference_users"`
@@ -98,6 +108,8 @@ func DocumentToGetOtherDocumentsResponse(document *domain.Document) GetOtherDocu
 		Id:             document.Id.String(),
 		Title:          document.Title,
 		File:           document.File,
+		FileHeight:     document.FileHeight,
+		FileWidth:      document.FileWidth,
 		Tags:           ConvertTags(document.Tags),
 		Referenced:     document.Referenced,
 		ReferenceUsers: document.ReferenceUsers,

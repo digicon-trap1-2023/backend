@@ -11,6 +11,8 @@ type Document struct {
 	Title       string `gorm:"type:varchar(40)"`
 	Description string `gorm:"type:varchar(200)"`
 	File        string `gorm:"type:varchar(200)"`
+	FileWidth   int    `gorm:"type:int"`
+	FileHeight  int    `gorm:"type:int"`
 }
 
 func (Document) TableName() string {
@@ -55,6 +57,8 @@ func (d *Document) ToDomain(userBookmarks []*BookMark, userReferences []*Referen
 		UserId:      userId,
 		Title:       d.Title,
 		File:        d.File,
+		FileHeight:  d.FileHeight,
+		FileWidth:   d.FileWidth,
 		Description: d.Description,
 		Tags:        tagsDomain,
 		BookMarked:  bookmarked,
@@ -98,6 +102,8 @@ func (d *Document) ToOtherDomain(userReferences []*Reference, userMap map[string
 		UserId:         userId,
 		Title:          d.Title,
 		File:           d.File,
+		FileHeight:     d.FileHeight,
+		FileWidth:      d.FileWidth,
 		Description:    d.Description,
 		Tags:           tagsDomain,
 		Referenced:     len(referenceUsers) > 0,

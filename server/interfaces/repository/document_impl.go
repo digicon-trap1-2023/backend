@@ -236,7 +236,7 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 
 	fileId := util.NewID().String()
 
-	fileUrl, err := r.s3.PutObject(fileId, file)
+	fileUrl, size, err := r.s3.PutObject(fileId, file)
 	if err != nil {
 		return nil, err
 	}
@@ -246,6 +246,8 @@ func (r *DocumentRepository) CreateDocument(userId uuid.UUID, title string, desc
 		UserId:      userId.String(),
 		Title:       title,
 		File:        fileUrl,
+		FileWidth:   size.Width,
+		FileHeight:  size.Height,
 		Description: description,
 	}
 	var tagDocuments []*model.TagDocument
@@ -296,12 +298,14 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 	}
 
 	if file != nil {
-		fileUrl, err := r.s3.PutObject(document.File, file)
+		fileUrl, size, err := r.s3.PutObject(document.File, file)
 		if err != nil {
 			return nil, err
 		}
 
 		document.File = fileUrl
+		document.FileHeight = size.Height
+		document.FileWidth = size.Width
 	}
 
 	if title != "" {
@@ -331,6 +335,8 @@ func (r *DocumentRepository) UpdateDocument(userId uuid.UUID, documentId uuid.UU
 		Title:       document.Title,
 		Description: document.Description,
 		File:        document.File,
+		FileHeight:  document.FileHeight,
+		FileWidth:   document.FileWidth,
 	}).Error; err != nil {
 		return nil, err
 	}
