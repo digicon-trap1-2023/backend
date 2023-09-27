@@ -427,6 +427,7 @@ func (r *DocumentRepository) DeleteDocument(userId uuid.UUID, documentId uuid.UU
 
 func (r *DocumentRepository) BookMark(userId uuid.UUID, documentId uuid.UUID) error {
 	bookmark := &model.BookMark{
+		Id:         uuid.NewString(),
 		UserId:     userId.String(),
 		DocumentId: documentId.String(),
 	}
@@ -448,6 +449,7 @@ func (r *DocumentRepository) UnBookMark(userId uuid.UUID, documentId uuid.UUID) 
 
 func (r *DocumentRepository) Reference(userId uuid.UUID, documentId uuid.UUID) error {
 	reference := &model.Reference{
+		Id:         uuid.NewString(),
 		UserId:     userId.String(),
 		DocumentId: documentId.String(),
 	}
