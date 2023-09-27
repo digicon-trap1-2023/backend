@@ -1,6 +1,10 @@
 package request
 
-import "github.com/digicon-trap1-2023/backend/domain"
+import (
+	"slices"
+
+	"github.com/digicon-trap1-2023/backend/domain"
+)
 
 type GetRequestsResponse struct {
 	Id          string   `json:"id"`
@@ -25,7 +29,7 @@ func RequestToGetRequestsResponse(request *domain.Request) *GetRequestsResponse 
 		Id:          request.Id.String(),
 		Title:       request.Title,
 		Description: request.Description,
-		Tags:        request.TagNames,
+		Tags:        slices.Compact(request.TagNames),
 		CreatedBy:   request.CreatedUserName,
 	}
 }
@@ -49,7 +53,7 @@ func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse 
 		Id:          request.Id.String(),
 		Title:       request.Title,
 		Description: request.Description,
-		Tags:        request.TagNames,
+		Tags:        slices.Compact(request.TagNames),
 		CreatedBy:   request.CreatedUserName,
 	}
 }
