@@ -1,15 +1,18 @@
 package model
 
 import (
+	"time"
+
 	"github.com/digicon-trap1-2023/backend/domain"
 	"github.com/google/uuid"
 )
 
 type Request struct {
-	Id          string `gorm:"type:char(36);not null;primaryKey"`
-	Title       string `gorm:"type:varchar(36)"`
-	Description string `gorm:"type:varchar(200)"`
-	UserId      string `gorm:"type:char(36)"`
+	Id          string    `gorm:"type:char(36);not null;primaryKey"`
+	Title       string    `gorm:"type:varchar(36)"`
+	Description string    `gorm:"type:varchar(200)"`
+	UserId      string    `gorm:"type:char(36)"`
+	CreatedAt   time.Time `gorm:"precision:6"`
 }
 
 type TagRequest struct {
