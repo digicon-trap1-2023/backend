@@ -2,16 +2,18 @@ package request
 
 import (
 	"slices"
+	"time"
 
 	"github.com/digicon-trap1-2023/backend/domain"
 )
 
 type GetRequestsResponse struct {
-	Id          string   `json:"id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Tags        []string `json:"tags"`
-	CreatedBy   string   `json:"created_by"`
+	Id          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Tags        []string  `json:"tags"`
+	CreatedBy   string    `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func RequestsToGetRequestsResponse(requests []*domain.Request) []*GetRequestsResponse {
@@ -31,6 +33,7 @@ func RequestToGetRequestsResponse(request *domain.Request) *GetRequestsResponse 
 		Description: request.Description,
 		Tags:        slices.Compact(request.TagNames),
 		CreatedBy:   request.CreatedUserName,
+		CreatedAt:   request.CreatedAt,
 	}
 }
 
@@ -41,11 +44,12 @@ type PostRequestRequest struct {
 }
 
 type PostRequestResponse struct {
-	Id          string   `json:"id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Tags        []string `json:"tags"`
-	CreatedBy   string   `json:"created_by"`
+	Id          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Tags        []string  `json:"tags"`
+	CreatedBy   string    `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse {
@@ -55,6 +59,7 @@ func RequestToPostRequestResponse(request *domain.Request) *PostRequestResponse 
 		Description: request.Description,
 		Tags:        slices.Compact(request.TagNames),
 		CreatedBy:   request.CreatedUserName,
+		CreatedAt:   request.CreatedAt,
 	}
 }
 
@@ -66,6 +71,7 @@ type GetRequestsWithDocumentResponse struct {
 	Id        string              `json:"id"`
 	Title     string              `json:"title"`
 	Documents []*DocumentResponse `json:"documents"`
+	CreatedAt time.Time           `json:"created_at"`
 }
 
 type DocumentResponse struct {
@@ -96,6 +102,7 @@ func RequestToGetRequestsWithDocumentResponse(request *domain.Request) *GetReque
 		Id:        request.Id.String(),
 		Title:     request.Title,
 		Documents: documents,
+		CreatedAt: request.CreatedAt,
 	}
 }
 
