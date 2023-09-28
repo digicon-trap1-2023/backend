@@ -78,6 +78,7 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 
 func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Request, error) {
 	var tags []*model.Tag
+	var user *model.User
 
 	requestModel, err := model.RequestToModel(request)
 	if err != nil {
@@ -110,6 +111,12 @@ func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Requ
 	}
 
 	request.TagNames = tagNames
+
+	if err := r.conn.Where("id = ?", request.CreatedBy).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	request.CreatedUserName = user.Name
 
 	return request, nil
 }
