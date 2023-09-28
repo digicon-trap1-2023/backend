@@ -73,8 +73,8 @@ func newDsnConfig() *sqldriver.Config {
 				util.ReadEnvs("NS_MARIADB_HOSTNAME"),
 				util.ReadEnvs("NS_MARIADB_PORT"),
 			),
-			DBName:    util.ReadEnvs("NS_MARIADB_DATABASE"),
-			Collation: "utf8mb4_general_ci",
+			DBName:               util.ReadEnvs("NS_MARIADB_DATABASE"),
+			Collation:            "utf8mb4_general_ci",
 			ParseTime:            true,
 			AllowNativePasswords: true,
 			Params: map[string]string{
