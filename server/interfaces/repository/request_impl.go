@@ -21,7 +21,7 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 	var tagRequests []*model.TagRequest
 	var tags []*model.Tag
 
-	if err := r.conn.Find(&requests).Order("created_at DESC").Error; err != nil {
+	if err := r.conn.Order("created_at DESC").Find(&requests).Error; err != nil {
 		return nil, err
 	}
 
