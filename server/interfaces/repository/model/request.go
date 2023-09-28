@@ -49,6 +49,7 @@ func (request *Request) ToDomain(tags []uuid.UUID, tagsMap map[string]string, us
 		TagNames:        tagNames,
 		CreatedBy:       userId,
 		CreatedUserName: userName,
+		CreatedAt:       request.CreatedAt,
 	}, nil
 }
 
@@ -60,6 +61,7 @@ func RequestToModel(request *domain.Request) (*Request, error) {
 		Title:       request.Title,
 		Description: request.Description,
 		UserId:      userId,
+		CreatedAt:   request.CreatedAt,
 	}, nil
 }
 
@@ -114,5 +116,6 @@ func requestToDomain(request *Request, documentIds []string, documentsMap map[st
 		CreatedBy:        userId,
 		CreatedUserName:  userNamesMap[request.UserId],
 		RelatedDocuments: documents,
+		CreatedAt:        request.CreatedAt,
 	}, nil
 }
