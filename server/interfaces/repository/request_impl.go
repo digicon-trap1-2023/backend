@@ -21,7 +21,7 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 	var tagRequests []*model.TagRequest
 	var tags []*model.Tag
 
-	if err := r.conn.Find(&requests).Error; err != nil {
+	if err := r.conn.Find(&requests).Order("created_at DESC").Error; err != nil {
 		return nil, err
 	}
 
@@ -78,7 +78,7 @@ func (r *RequestRepository) GetRequests() ([]*domain.Request, error) {
 
 func (r *RequestRepository) CreateRequest(request *domain.Request) (*domain.Request, error) {
 	var tags []*model.Tag
-	
+
 	requestModel, err := model.RequestToModel(request)
 	if err != nil {
 		return nil, err
@@ -132,7 +132,7 @@ func (r *RequestRepository) GetRequestsWithDocument(userId uuid.UUID) ([]*domain
 	var requestDocuments []*model.RequestDocument
 	var documents []*model.Document
 	var users []*model.User
-	if err := r.conn.Where("user_id = ?", userId).Find(&requests).Error; err != nil {
+	if err := r.conn.Where("user_id = ?", userId).Order("created_at DESC").Find(&requests).Error; err != nil {
 		return nil, err
 	}
 
